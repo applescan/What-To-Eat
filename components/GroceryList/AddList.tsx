@@ -16,15 +16,25 @@ export default function AddList() {
             await utils.grocery.getAll.cancel();
             utils.grocery.getAll.setData(undefined, (prevEntries) => {
                 if (prevEntries) {
-                    return [newEntry, ...prevEntries];
+                    return [
+                        {
+                            id: Date.now(), // generate a unique ID for the new entry
+                            title: newEntry.title,
+                            checked: false,
+                        },
+                        ...prevEntries,
+                    ];
                 } else {
-                    return [newEntry];
+                    return [
+                        {
+                            id: Date.now(), // generate a unique ID for the new entry
+                            title: newEntry.title,
+                            checked: false,
+                        },
+                    ];
                 }
             });
-        },
-        onSettled: async () => {
-            await utils.grocery.getAll.invalidate();
-        },
+        }
     });
 
     const deleteAllEntries = api.grocery.deleteAll.useMutation({
