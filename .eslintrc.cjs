@@ -20,16 +20,18 @@ const config = {
   },
   plugins: ["@typescript-eslint"],
   extends: ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
-  rules: {
-    "@typescript-eslint/consistent-type-imports": [
-      "off",
-      {
-        prefer: "type-imports",
-        fixStyle: "inline-type-imports",
-      },
-    ],
-    "@typescript-eslint/no-unused-vars": ["off", { argsIgnorePattern: "^_" }],
-  },
+  "rules": {
+    "no-console": "off",
+    "no-unused-vars": "off",
+    "no-undef": "off",
+    "no-redeclare": "off",
+    "no-extra-semi": "off",
+    "no-empty": "off",
+    "no-mixed-spaces-and-tabs": "off",
+    "no-trailing-spaces": "off",
+    "quotes": "off",
+    "semi": "off"
+  }
 };
 
 module.exports = config;
