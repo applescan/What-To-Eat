@@ -32,7 +32,7 @@ const MultiStepForm = () => {
 
 
     //handling form submission
-    const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         // validate the form values
@@ -45,9 +45,14 @@ const MultiStepForm = () => {
         console.log(formValues);
         //save users choice in local storage
         localStorage.setItem('formValues', JSON.stringify(formValues));
-        router.push('/recipes');
 
+        try {
+            await router.push('/recipes');
+        } catch (error) {
+            console.error(error);
+        }
     };
+
 
     const handleInputChange = (
         event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -64,11 +69,11 @@ const MultiStepForm = () => {
     };
 
     const handleNextClick = () => {
-            setStep(step + 1); 
+        setStep(step + 1);
     };
 
     const handlePrevClick = () => {
-            setStep(step - 1);
+        setStep(step - 1);
     };
 
     return (
