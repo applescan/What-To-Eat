@@ -25,7 +25,7 @@ I hope this project can help people find inspiration and joy in cooking at home.
 
 
 ## Demo
-Here is a working live demo :  https://what-to-eat-applescan.vercel.app/
+Here is a working live demo :  https://what-to-eat-2-applescan.vercel.app/
 
 
 ### Built with
