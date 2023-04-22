@@ -21,7 +21,7 @@ I hope this project can help people find inspiration and joy in cooking at home.
 </table>
 
 ## Screenshots
-![](https://github.com/applescan/what-to-eat/blob/main/public/1-horz.jpg)
+![](https://github.com/applescan/what-to-eat/blob/main/public/What-to-eat-1.png)
 
 
 ## Demo
