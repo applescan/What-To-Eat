@@ -35,8 +35,8 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #fff;
-  height: 100vh;
+  background-color: transparent;
+  height: 100%; 
 }
 
 .load-wrapp:last-child {

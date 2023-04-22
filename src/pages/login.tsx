@@ -1,10 +1,10 @@
-import LoginLogout from 'components/GroceryList/LoginLogout'
+import LoginLogout from 'components/GroceryList/LoginLogout';
 
 export default function Login(): JSX.Element {
   return (
     <div>
-      <LoginLogout> </LoginLogout>
+      <LoginLogout />
     </div>
-
-  )
+  );
 }
+

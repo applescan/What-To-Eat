@@ -40,16 +40,23 @@ export default function Header() {
               />
             </Link>
             {session ? (
-              <button
-                className="flex items-center justify-center px-4  text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg md:inline-flex"
-                onClick={() => signOut()}>
-                Logout
-              </button>
+              <div className="flex">
+                <Link
+                  href={{ pathname: "/login" }}
+                  className="flex items-center justify-center px-6 text-gray-700 font-medium hover:text-indigo-500 active:text-indigo-600 rounded-lg md:inline-flex">
+                  My groceries
+                </Link>
+                <button
+                  className="flex items-center justify-center px-4 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg md:inline-flex"
+                  onClick={() => signOut()}>
+                  Logout
+                </button>
+              </div>
             ) : (
               <Link
                 href={{ pathname: "/login" }}
                 className="flex items-center justify-center px-4 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg md:inline-flex">
-                Members area
+                Login
               </Link>
             )}
           </div>
