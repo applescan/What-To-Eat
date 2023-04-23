@@ -1,94 +1,15 @@
-
-// import { z } from "zod";
-// import { createTRPCRouter, protectedProcedure } from "../trpc";
-
-// export const groceryRouter = createTRPCRouter({
-//   getAll: protectedProcedure.query(async ({ ctx }) => {
-//     try {
-//       return await ctx.prisma.groceryList.findMany();
-//     } catch (error) {
-//       console.log("error", error);
-//     }
-//   }),
-//   postMessage: protectedProcedure
-//     .input(
-//       z.object({
-//         title: z.string(),
-//       })
-//     )
-//     .mutation(async ({ ctx, input }) => {
-//       try {
-//         await ctx.prisma.groceryList.create({
-//           data: {
-//             title: input.title
-//           },
-//         });
-//       } catch (error) {
-//         console.log(error);
-//       }
-//     }),
-// });
-
-// import * as trpc from "@trpc/server";
-// import { z } from "zod";
-
-// import { Context } from "./context";
-
-// export const serverRouter = trpc
-//   .router<Context>()
-//   .query("findAll", {
-//     resolve: async ({ ctx }) => {
-//       return await ctx.prisma.groceryList.findMany();
-//     },
-//   })
-//   .mutation("insertOne", {
-//     input: z.object({
-//       title: z.string(),
-//     }),
-//     resolve: async ({ input, ctx }) => {
-//       return await ctx.prisma.groceryList.create({
-//         data: { title: input.title },
-//       });
-//     },
-//   })
-//   .mutation("updateOne", {
-//     input: z.object({
-//       id: z.number(),
-//       title: z.string(),
-//       checked: z.boolean(),
-//     }),
-//     resolve: async ({ input, ctx }) => {
-//       const { id, ...rest } = input;
-
-//       return await ctx.prisma.groceryList.update({
-//         where: { id },
-//         data: { ...rest },
-//       });
-//     },
-//   })
-//   .mutation("deleteAll", {
-//     input: z.object({
-//       ids: z.number().array(),
-//     }),
-//     resolve: async ({ input, ctx }) => {
-//       const { ids } = input;
-
-//       return await ctx.prisma.groceryList.deleteMany({
-//         where: {
-//           id: { in: ids },
-//         },
-//       });
-//     },
-//   });
-
-
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const groceryRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
+    const { userId } = ctx.session.user;
     try {
-      return await ctx.prisma.groceryList.findMany();
+      return await ctx.prisma.groceryList.findMany({
+        where: {
+          userId,
+        },
+      });
     } catch (error) {
       console.log("error", error);
     }
@@ -100,10 +21,12 @@ export const groceryRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx.session.user;
       try {
         return await ctx.prisma.groceryList.create({
           data: {
             title: input.title,
+            userId,
           },
         });
       } catch (error) {
@@ -113,27 +36,33 @@ export const groceryRouter = createTRPCRouter({
   updateOne: protectedProcedure
     .input(
       z.object({
-        id: z.number(),
+        id: z.string(),
         title: z.string(),
         checked: z.boolean(),
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx.session.user;
       try {
         const { id, ...rest } = input;
         return await ctx.prisma.groceryList.update({
-          where: { id },
+          where: { id_userId: { id, userId } },
           data: { ...rest },
         });
       } catch (error) {
         console.log(error);
       }
     }),
-    deleteAll: protectedProcedure
+  deleteAll: protectedProcedure
     .input(z.object({}))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ ctx }) => {
+      const { userId } = ctx.session.user;
       try {
-        return await ctx.prisma.groceryList.deleteMany({});
+        return await ctx.prisma.groceryList.deleteMany({
+          where: {
+            userId,
+          },
+        });
       } catch (error) {
         console.log(error);
       }
