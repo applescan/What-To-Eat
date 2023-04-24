@@ -4,12 +4,12 @@ import { useState } from 'react';
 import Loading from 'components/Loading';
 
 interface GroceryEntry {
-  id: number;
+  id: string;
   title: string;
 }
 
 export default function GroceryEntries() {
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const { data: groceryEntries, isLoading } = api.grocery.getAll.useQuery();
 
   const updateOne = (entry: GroceryEntry) => {
@@ -27,12 +27,12 @@ export default function GroceryEntries() {
       {groceryEntries?.length === 0 ? (
         <p className="font-semibold text-m"> No entries found.</p>
       ) : (
-        groceryEntries?.map((entry: GroceryEntry, index: number) => {
+        groceryEntries?.map((value: GroceryEntry, index: number, array: GroceryEntry[]) => {
           return (
             <div key={index} className="flex items-center">
               <label>
-                <input type="checkbox" onChange={() => updateOne(entry)} className="mr-2" />
-                <span className="font-semibold text-m"> {entry.title}</span>
+                <input type="checkbox" onChange={() => updateOne(value)} className="mr-2" />
+                <span className="font-semibold text-m"> {value.title}</span>
               </label>
             </div>
           );
@@ -41,3 +41,4 @@ export default function GroceryEntries() {
     </div>
   );
 }
+
