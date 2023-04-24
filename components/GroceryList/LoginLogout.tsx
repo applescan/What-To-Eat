@@ -28,7 +28,7 @@ export default function LoginLogout() {
                             <p className="max-w-2xl mx-auto text-gray-800 font-semibold text-center pb-6">
                                 Get started by typing your list here
                             </p>
-                            <div className="pt-6 items-center flex justify-center">
+                            <div className=" items-center flex justify-center">
                                 <AddList />
                             </div>
 
