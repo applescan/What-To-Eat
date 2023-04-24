@@ -15,7 +15,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <Header></Header>
       <title>What to Eat - A Recipe Recommendation Engine</title>
-      <meta name="google-site-verification" content="05TP2khEkfynfrDrUulbuRogUrTIRmHnh8aGuuor-Us" />
       <Component {...pageProps} />
       <Footer></Footer>
     </SessionProvider>
