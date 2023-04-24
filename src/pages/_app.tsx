@@ -15,11 +15,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <Header></Header>
       <title>What to Eat - A Recipe Recommendation Engine</title>
-      <meta
-        name="description"
-        content="What to Eat - is a recipe recommendation engine that suggests delicious recipes based on your dietary preferences and ingredients on hand, while also helping to reduce food waste. 🍴"
-        key="desc"
-      />
+      <meta name="google-site-verification" content="05TP2khEkfynfrDrUulbuRogUrTIRmHnh8aGuuor-Us" />
       <Component {...pageProps} />
       <Footer></Footer>
     </SessionProvider>
