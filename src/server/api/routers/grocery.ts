@@ -46,7 +46,7 @@ export const groceryRouter = createTRPCRouter({
       try {
         const { id, ...rest } = input;
         return await ctx.prisma.groceryList.update({
-          where: { id_userId: { id, userId } },
+          where: {id},
           data: { ...rest },
         });
       } catch (error) {
