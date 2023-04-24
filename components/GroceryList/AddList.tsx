@@ -14,11 +14,11 @@ export default function AddList() {
     const postMessage = api.grocery.postMessage.useMutation({
         onMutate: async (newEntry) => {
             await utils.grocery.getAll.cancel();
-            utils.grocery.getAll.setData(undefined, (prevEntries) => {
+            utils.grocery.getAll.setData(undefined, (prevEntries: any) => {
                 if (prevEntries) {
                     return [
                         {
-                            id: Date.now(), // generate a unique ID for the new entry
+                            userId: session?.user.id,
                             title: newEntry.title,
                             checked: false,
                         },
@@ -27,7 +27,7 @@ export default function AddList() {
                 } else {
                     return [
                         {
-                            id: Date.now(), // generate a unique ID for the new entry
+                            userId: session?.user.id,
                             title: newEntry.title,
                             checked: false,
                         },
