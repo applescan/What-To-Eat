@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Loading from 'components/Loading';
 
 interface RecipeProps {
+    id: number;
     title: string;
     image: string;
     servings: number;
@@ -62,6 +63,7 @@ export const getStaticProps: GetStaticProps<RecipePageProps, { id: string }> = a
 
     try {
         const recipe: RecipeProps = {
+            id: res.data.id,
             title: res.data.title,
             image: res.data.image,
             servings: res.data.servings,

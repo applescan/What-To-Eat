@@ -11,9 +11,9 @@ datasource db {
 }
 
 model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Necessary for Next auth
@@ -44,11 +44,12 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  accounts      Account[]
-  sessions      Session[]
-  groceryLists  GroceryList[]
+  id              String           @id @default(cuid())
+  name            String?
+  accounts        Account[]
+  sessions        Session[]
+  groceryLists    GroceryList[]
+  favoriteRecipes FavoriteRecipe[]
 }
 
 model GroceryList {
@@ -59,11 +60,13 @@ model GroceryList {
   userId  String
 }
 
-model Guestbook {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    name      String
-    message   String   @db.VarChar(100)
+model FavoriteRecipe {
+  id     Int @id 
+  title  String
+  image  String
+  href   String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model VerificationToken {

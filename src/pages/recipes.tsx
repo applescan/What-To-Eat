@@ -3,6 +3,9 @@ import RecipeCard from 'components/Form/Cards/RecipeCard';
 import Axios from "axios";
 import Snackbar from 'components/Snackbar';
 import Link from 'next/link';
+import { api } from "../../src/utils/api";
+import { signIn, signOut, useSession } from "next-auth/react";
+
 
 type FormData = {
     dietary: string;
@@ -28,7 +31,10 @@ export default function Recipes() {
 
     const [snackbarOpen, setSnackbarOpen] = useState(false)
     const [error, setError] = useState("")
-    const [loading, setLoading] = useState(false)
+    const [favoriteRecipes, setFavoriteRecipes] = useState<number[]>([]);
+    const utils = api.useContext();
+    const { data: session } = useSession();
+
 
     useEffect(() => {
         // Retrieve form data from local storage
@@ -81,6 +87,55 @@ export default function Recipes() {
 
     }, []);
 
+    useEffect(() => {
+        const fetchFavoriteRecipes = async () => {
+            try {
+                if (session?.user) {
+                    const response = await utils.favorites.getAll.fetch();
+                    const favoritesIds = response?.map((favorite) => favorite.id);
+                    const recipeIds = recipes.map((recipe) => recipe.id);
+                    const favoriteRecipeIds = recipeIds.filter((id) =>
+                        favoritesIds?.includes(id)
+                    );
+                    setFavoriteRecipes(favoriteRecipeIds);
+                    console.log("User's favorite recipes:", favoriteRecipeIds);
+                } else {
+                    setFavoriteRecipes([]);
+                }
+            } catch (error) {
+                console.log("Error fetching favorites", error);
+            }
+        };
+    
+        fetchFavoriteRecipes();
+    }, [recipes]);
+    
+
+    const handleFavoriteClick = async (id: number) => {
+        if (favoriteRecipes.includes(id)) {
+            // Remove recipe from favorites if already favorited
+            const newFavorites = favoriteRecipes.filter((favorite) => favorite !== id);
+            setFavoriteRecipes(newFavorites);
+            // Delete recipe from favorites in the database
+            try {
+                await api.favorites.deleteOne.useMutation();
+            } catch (error) {
+                console.log("Error deleting favorite", error);
+            }
+        } else {
+            // Add recipe to favorites if not already favorited
+            const newFavorites = [...favoriteRecipes, id];
+            setFavoriteRecipes(newFavorites);
+            // Save recipe as favorite in the database
+            try {
+                await api.favorites.addFavorites.useMutation();
+            } catch (error) {
+                console.log("Error adding favorite", error);
+            }
+        }
+    };
+
+
 
     return (
         <div className="py-14 px-10 md:px-8 bg-[url('../../public/background-3.png')] bg-contain bg-no-repeat">
@@ -110,9 +165,12 @@ export default function Recipes() {
                         {recipes.map((recipe) => (
                             <RecipeCard
                                 key={recipe.id}
+                                id={recipe.id}
                                 title={recipe.title}
                                 img={recipe.img}
                                 href={recipe.href}
+                                isFavorited={favoriteRecipes.includes(recipe.id)}
+                                onFavoriteClick={handleFavoriteClick}
                             />
                         ))}
                     </ul>

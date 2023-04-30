@@ -11,6 +11,8 @@ export default function AddList() {
     const [title, setTitle] = useState("");
     const { data: session, status } = useSession();
     const utils = api.useContext();
+
+    
     const postMessage = api.grocery.postMessage.useMutation({
         onMutate: async (newEntry) => {
             await utils.grocery.getAll.cancel();

@@ -52,10 +52,10 @@ export const authOptions: NextAuthOptions = {
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
-    FacebookProvider({
-      clientId: env.FACEBOOK_ID,
-      clientSecret: env.FACEBOOK_SECRET
-    }),
+    // FacebookProvider({
+    //   clientId: env.FACEBOOK_ID,
+    //   clientSecret: env.FACEBOOK_SECRET
+    // }),
     /**
      * ...add more providers here.
      *
