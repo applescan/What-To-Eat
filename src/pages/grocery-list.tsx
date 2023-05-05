@@ -119,7 +119,7 @@ const GroceryPage = () => {
     return (
         <>
             {error ? (
-                <div className="px-40 py-40 h-screen justify-center items-center">
+                <div className="py-14 mx-14 bg-[url('../../public/background-4.png')] bg-cover bg-no-repeat min-h-[65vh] justify-center items-center">
                     {snackbarOpen && (
                         <Snackbar message={error} link='/' />
                     )}
@@ -139,7 +139,6 @@ const GroceryPage = () => {
                                     ✨
                                 </h2>
                             </div>
-
                             <p className="max-w-2xl mx-auto text-gray-800 font-semibold text-center text-lg pb-6">
                                 Get started by typing your list here
                             </p>
@@ -148,9 +147,8 @@ const GroceryPage = () => {
                             </div>
 
                             <br></br>
-                            
+
                             <p className="mx-auto text-gray-800 font-semibold text-center text-xl pt-6">
-                                Get started by typing your list here
                                 or add groceries from{" "}
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#14b8a6]">
                                     your favorites recipes!
