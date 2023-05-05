@@ -9,11 +9,17 @@ interface RecipeCardProps {
     title: string;
     img: string;
     href: string;
+    extendedIngredients: {
+        name: string;
+        image: string;
+        amount: number;
+        unit: string;
+    }[];
     isFavorited: boolean;
     onFavoriteClick: Function;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({ id, title, img, href, isFavorited, onFavoriteClick }) => {
+const GroceryCard: React.FC<RecipeCardProps> = ({ id, img, title, href, isFavorited, extendedIngredients, onFavoriteClick }) => {
     const [isFavoritedState, setIsFavoritedState] = useState(isFavorited);
     const { data: session, status } = useSession();
     const utils = api.useContext();
@@ -32,8 +38,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ id, title, img, href, isFavorit
                     const data = await addFavorites.mutate({
                         id,
                         title,
-                        image: img,
-                        href,
                     });
                     console.log("add favorite recipe response:", data);
                     setIsFavoritedState(true);
@@ -45,6 +49,26 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ id, title, img, href, isFavorit
             signIn();
         }
     };
+
+
+    const handleGroceryClick = async () => {
+
+        const groceryList = extendedIngredients.map((ingredient) => ({
+            title: `${ingredient.name}: ${ingredient.amount} ${ingredient.unit}`
+        }));
+
+        for (const groceryItem of groceryList) {
+            postMessage.mutate(groceryItem, {
+                onSuccess: () => {
+                    console.log("Added grocery item to the list successfully");
+                },
+                onError: (error) => {
+                    console.error("Failed to add grocery item to the list:", error);
+                },
+            });
+        }
+    };
+
 
     const addFavorites = api.favorites.addFavorites.useMutation({
         onMutate: async (newEntry) => {
@@ -72,10 +96,36 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ id, title, img, href, isFavorit
         },
     });
 
+    const postMessage = api.grocery.postMessage.useMutation({
+        onMutate: async (newEntry) => {
+            await utils.grocery.getAll.cancel();
+            utils.grocery.getAll.setData(undefined, (prevEntries: any) => {
+                if (prevEntries) {
+                    return [
+                        {
+                            userId: session?.user.id,
+                            title: newEntry.title,
+                            checked: false,
+                        },
+                        ...prevEntries,
+                    ];
+                } else {
+                    return [
+                        {
+                            userId: session?.user.id,
+                            title: newEntry.title,
+                            checked: false,
+                        },
+                    ];
+                }
+            });
+        }
+    });
+
 
 
     return (
-        <div className="max-w-xs rounded-md shadow-md bg-indigo-50 ">
+        <div className="max-w-m rounded-md shadow-md bg-indigo-50 ">
             <div className="flex justify-center rounded-xl">
                 <Image
                     src={img}
@@ -108,19 +158,43 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ id, title, img, href, isFavorit
                                 />
                             </button>
                         </div>
+                        <br></br>
+                        <div>
+                            <span className="block text-sm pb-2 font-medium tracking-widest uppercase text-indigo-400">
+                                Ingredients
+                            </span>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {extendedIngredients.map((ingredient: any, idx) => (
+                                    <div key={idx}>
+                                        <span className="text-small font-semibold">{ingredient.name}:</span>
+                                        <span className="text-base font-bold"> {ingredient.amount} {ingredient.unit}</span>
+                                    </div>
+                                )).reduce((rows: any, element: any, idx: number) => {
+                                    return (idx % 5 === 0) ? [...rows, [element]] : [...rows.slice(0, -1), [...rows.slice(-1)[0], element]];
+                                }, []).map((row: any, idx: number) => (
+                                    <ul key={idx}>
+                                        {row.map((element: any, idx: number) => (
+                                            <li key={idx}>{element}</li>
+                                        ))}
+                                    </ul>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <a
-                    href={href}
-                    className="text-white block rounded-lg text-center font-medium leading-6 px-6 py-2 bg-gradient-to-r from-[#6366f1] to-[#14b8a6] hover:bg-teal-400 hover:text-white"
-                >
-                    Let's Cook 🍳</a>
+                <button
+                    className="flex items-center justify-center py-3 px-4 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg md:inline-flex"
+                    onClick={handleGroceryClick}>
+                    Add to grocery list 🛍️
+                </button>
             </div>
-        </div>
+        </div >
     );
 }
 
-export default RecipeCard;
+export default GroceryCard;
+
 
 
 

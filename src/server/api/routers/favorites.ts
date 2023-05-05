@@ -19,8 +19,6 @@ export const favoritesRouter = createTRPCRouter({
       z.object({
         id: z.number(),
         title: z.string(),
-        image: z.string(),
-        href: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -31,8 +29,6 @@ export const favoritesRouter = createTRPCRouter({
             title: input.title,
             userId,
             id: input.id,
-            image: input.image,
-            href: input.href,
           },
         });
       } catch (error) {

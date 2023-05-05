@@ -4,7 +4,7 @@ import Axios from "axios";
 import Snackbar from 'components/Snackbar';
 import Link from 'next/link';
 import { api } from "../../src/utils/api";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 
 type FormData = {
@@ -44,6 +44,9 @@ export default function Recipes() {
             const formDataString = localStorage.getItem('formValues');
             if (formDataString) {
                 formValues = JSON.parse(formDataString);
+            } else {
+                setSnackbarOpen(true);
+                setError("No recipes found. Please set dietary preferences and ingredients");
             }
         }
 
@@ -53,39 +56,38 @@ export default function Recipes() {
 
         // Make API call to Spoonacular
         const fetchRecipes = async () => {
-            const res = await Axios.get(
-                `https://api.spoonacular.com/recipes/complexSearch?query=${formValues.ingredients}&cuisine=${formValues.dietary}&diet=${formValues.pantry}&apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&number=9`
-            );
+            try {
+                const res = await Axios.get(
+                    `https://api.spoonacular.com/recipes/complexSearch?query=${formValues.ingredients}&cuisine=${formValues.dietary}&diet=${formValues.pantry}&apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&number=9`
+                );
 
+                // Extract recipe data from response
+                const recipes = res.data.results.map((recipe: any) => ({
+                    id: recipe.id,
+                    title: recipe.title,
+                    img: recipe.image,
+                    href: `/recipes/${recipe.id}`
+                }));
 
-            // Handle unauthorized access error (402)
-            if (res.status === 402) {
+                // Set recipe data in state
+                setRecipes(recipes);
+
+                // Show Snackbar if no recipes found
+                if (recipes.length === 0) {
+                    setSnackbarOpen(true);
+                    setError("No recipes found. Maybe try a different ingredients? 💭")
+                }
+            } catch (error) {
+                // Handle error when fetching API
                 setSnackbarOpen(true);
-                setError("Daily quota reached. Please try again tomorrow!")
-                return;
-            }
-
-            // Extract recipe data from response
-            const recipes = res.data.results.map((recipe: any) => ({
-                id: recipe.id,
-                title: recipe.title,
-                img: recipe.image,
-                href: `/recipes/${recipe.id}`
-            }));
-
-            // Set recipe data in state
-            setRecipes(recipes);
-
-            // Show Snackbar if no recipes found
-            if (recipes.length === 0) {
-                setSnackbarOpen(true);
-                setError("No recipes found. Maybe try a different ingredients? 💭")
+                setError("Daily quota has been reached, please come back tomorrow!")
             }
         };
 
         fetchRecipes();
 
     }, []);
+
 
     useEffect(() => {
         const fetchFavoriteRecipes = async () => {
@@ -106,10 +108,10 @@ export default function Recipes() {
                 console.log("Error fetching favorites", error);
             }
         };
-    
+
         fetchFavoriteRecipes();
     }, [recipes]);
-    
+
 
     const handleFavoriteClick = async (id: number) => {
         if (favoriteRecipes.includes(id)) {

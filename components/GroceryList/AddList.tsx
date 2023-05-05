@@ -61,7 +61,7 @@ export default function AddList() {
                     </span>
                     <div className='text-gray-800 text-lg font-semibold'>
                         <form
-                            className="flex gap-2"
+                            className="flex mx-auto justify-between gap-2"
                             onSubmit={(event) => {
                                 event.preventDefault();
                                 postMessage.mutate({
@@ -72,7 +72,7 @@ export default function AddList() {
                         >
                             <input
                                 type="text"
-                                className="text-base bg-teal-50 border-2 border-indigo-200 text-gray-700 rounded-lg focus:ring-teal-500 focus:border-teal-500 p-2"
+                                className="text-base bg-teal-50 border-2 border-indigo-200 text-gray-700 rounded-lg focus:ring-teal-500 focus:border-teal-500 p-2 w-5/6"
                                 placeholder="Your list to add..."
                                 minLength={2}
                                 maxLength={100}

@@ -3,6 +3,8 @@ import Axios from "axios";
 import Link from "next/link";
 import Image from 'next/image';
 import Loading from 'components/Loading';
+import Snackbar from 'components/Snackbar';
+import React, { useState } from 'react';
 
 interface RecipeProps {
     id: number;
@@ -56,12 +58,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 }
 
 export const getStaticProps: GetStaticProps<RecipePageProps, { id: string }> = async ({ params }) => {
-    // Fetch recipe details using the provided ID
-    const res = await Axios.get(
-        `https://api.spoonacular.com/recipes/${params!.id}/information?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}`
-    );
-
     try {
+        // Fetch recipe details using the provided ID
+        const res = await Axios.get(
+            `https://api.spoonacular.com/recipes/${params!.id}/information?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}`
+        );
+
         const recipe: RecipeProps = {
             id: res.data.id,
             title: res.data.title,
@@ -84,14 +86,38 @@ export const getStaticProps: GetStaticProps<RecipePageProps, { id: string }> = a
             revalidate: 1,
         };
     } catch (error) {
+        // Check for 402 status code
+        if (error === 402) {
+            return {
+                props: {
+                    error: 'Quota has been reached, please come back again tomorrow',
+                },
+                revalidate: 1,
+            };
+        }
+
         return {
-            notFound: true, // set notFound to true
+            notFound: true,
         };
     }
 };
 
 
-const RecipePage = ({ recipe }: RecipePageProps) => {
+
+const RecipePage = ({ recipe, error }: RecipePageProps & { error?: string }) => {
+    
+    const [snackbarOpen, setSnackbarOpen] = useState(false)
+
+    if (error) {
+        return (
+            <div className="flex h-screen justify-center items-center">
+                {snackbarOpen && (
+                    <Snackbar message={error} link='/' />
+                )}
+            </div>
+        );
+    }
+
     if (!recipe) {
         return (
             <div className="flex h-screen justify-center items-center">

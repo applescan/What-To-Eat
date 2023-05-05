@@ -32,10 +32,10 @@ export default function Header() {
         </div>
         <Popover.Group className="hidden lg:flex lg:gap-x-12">
           <Link href={{ pathname: '/recipes' }} className="flex items-center justify-center px-6 text-gray-700 font-medium hover:text-indigo-500 active:text-indigo-600 rounded-lg md:inline-flex">
-            Recipe suggestions
+            Recipe Suggestions
           </Link>
           <Link href={{ pathname: '/grocery-list' }} className="flex items-center justify-center px-6 text-gray-700 font-medium hover:text-indigo-500 active:text-indigo-600 rounded-lg md:inline-flex">
-            My groceries
+            Favorites & Groceries
           </Link>
         </Popover.Group>
         {session ? (

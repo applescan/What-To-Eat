@@ -22,23 +22,38 @@ export default function GroceryEntries() {
 
   if (isLoading) return <div> <Loading></Loading></div>;
 
+  const groceryColumns = groceryEntries?.reduce((columns: any, entry: GroceryEntry, index: number) => {
+    const columnIdx = Math.floor(index / 5);
+    if (!columns[columnIdx]) {
+      columns[columnIdx] = [];
+    }
+    columns[columnIdx].push(
+      <div key={index} className="flex items-center">
+        <label>
+          <input type="checkbox" onChange={() => updateOne(entry)} className="mr-2" />
+          <span className="font-semibold text-m">{entry.title}</span>
+        </label>
+      </div>
+    );
+    return columns;
+  }, []);
+
   return (
     <div className="flex flex-col gap-4">
       {groceryEntries?.length === 0 ? (
-        <p className="font-semibold text-m"> No entries found.</p>
+        <p className="font-semibold text-m">No entries found.</p>
       ) : (
-        groceryEntries?.map((value: GroceryEntry, index: number, array: GroceryEntry[]) => {
-          return (
-            <div key={index} className="flex items-center">
-              <label>
-                <input type="checkbox" onChange={() => updateOne(value)} className="mr-2" />
-                <span className="font-semibold text-m"> {value.title}</span>
-              </label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {groceryColumns?.map((column: any, index: number) => (
+            <div key={index}>
+              {column}
             </div>
-          );
-        })
+          ))}
+        </div>
       )}
     </div>
   );
 }
+
+
 
