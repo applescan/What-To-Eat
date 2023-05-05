@@ -32,8 +32,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ id, title, img, href, isFavorit
                     const data = await addFavorites.mutate({
                         id,
                         title,
-                        image: img,
-                        href,
                     });
                     console.log("add favorite recipe response:", data);
                     setIsFavoritedState(true);
