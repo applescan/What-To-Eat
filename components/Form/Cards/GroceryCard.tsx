@@ -184,10 +184,15 @@ const GroceryCard: React.FC<RecipeCardProps> = ({ id, img, title, href, isFavori
                     </div>
                 </div>
                 <button
-                    className="flex items-center justify-center py-3 px-4 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg md:inline-flex"
+                    className="flex items-center justify-center py-2 px-4 text-white font-medium  bg-gradient-to-r from-[#14b8a6] to-[#a3e635] hover:bg-teal-400 rounded-lg md:inline-flex"
                     onClick={handleGroceryClick}>
                     Add to grocery list 🛍️
                 </button>
+                <a
+                    href={`/recipes${href}`}
+                    className="text-white block rounded-lg text-center font-medium leading-6 px-6 py-2 bg-gradient-to-r from-[#6366f1] to-[#14b8a6] hover:bg-teal-400 hover:text-white"
+                >
+                    Let's Cook 🍳</a>
             </div>
         </div >
     );

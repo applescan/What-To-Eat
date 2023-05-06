@@ -155,7 +155,7 @@ const GroceryPage = () => {
                                 </span>
                             </p>
 
-                            <div className="my-12 flex justify-center">
+                            {favoriteRecipesDetails.length > 0 ? (
                                 <ul className="grid gap-16 sm:grid-cols-2 lg:grid-cols-3">
                                     {favoriteRecipesDetails.map((recipe) => (
                                         <GroceryCard
@@ -170,7 +170,10 @@ const GroceryPage = () => {
                                         />
                                     ))}
                                 </ul>
-                            </div>
+                            ) : (
+                                <p className="text-center text-gray-700 py-6">You dont have any favorite recipes yet 😓 Please add some from your reccomendations. </p>
+                            )}
+
 
                         </div>
                     </div>

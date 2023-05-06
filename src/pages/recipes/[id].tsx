@@ -5,6 +5,9 @@ import Image from 'next/image';
 import Loading from 'components/Loading';
 import { useState, useEffect } from 'react';
 import Snackbar from 'components/Snackbar';
+import { FiHeart } from 'react-icons/fi';
+import { signIn, useSession } from "next-auth/react";
+import { api } from "../../../src/utils/api";
 
 interface RecipeProps {
     id: number;
@@ -39,6 +42,7 @@ interface RecipeProps {
 interface RecipePageProps {
     recipe: RecipeProps
 }
+
 
 export const getStaticPaths: GetStaticPaths = async () => {
     // Fetch recipe IDs
@@ -98,6 +102,10 @@ export const getStaticProps: GetStaticProps<RecipePageProps, { id: string }> = a
 const RecipePage = ({ recipe }: RecipePageProps) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [error, setError] = useState('');
+    const [favoriteRecipes, setFavoriteRecipes] = useState<number[]>([]);
+    const [isFavoritedState, setIsFavoritedState] = useState(false);
+    const { data: session, status } = useSession();
+    const utils = api.useContext();
 
 
     useEffect(() => {
@@ -114,6 +122,87 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
 
         fetchData();
     }, []);
+
+    useEffect(() => {
+        const fetchFavoriteRecipes = async () => {
+            try {
+                if (session?.user) {
+                    const response = await utils.favorites.getAll.fetch();
+                    const favoritesIds = response?.map((favorite) => favorite.id);
+
+                    console.log("User's favorite recipes:", favoritesIds);
+
+                    // Check if the recipe is among the user's favorite recipes
+                    const isFavorited = favoritesIds?.includes(recipe.id);
+                    setIsFavoritedState(isFavorited ?? false);
+
+                } else {
+                    setIsFavoritedState(false);
+                }
+            } catch (error) {
+                console.log("Error fetching favorites", error);
+            }
+        };
+
+        fetchFavoriteRecipes();
+        console.log(isFavoritedState);
+    }, [session, recipe?.id]); // Include recipe.id as a dependency to re-run the effect when it changes
+
+
+
+
+
+    const handleFavoriteClick = async () => {
+        if (status === "authenticated") {
+            try {
+                if (isFavoritedState) {
+                    const data = await removeFavorite.mutate({
+                        id: recipe.id,
+                    });
+                    console.log("remove favorite recipe response:", data);
+                    setIsFavoritedState(false);
+                } else {
+                    const data = await addFavorites.mutate({
+                        id: recipe.id,
+                        title: recipe.title,
+                    });
+                    console.log("add favorite recipe response:", data);
+                    setIsFavoritedState(true);
+                }
+            } catch (error) {
+                console.log("favorite recipe error:", error);
+            }
+        } else {
+            signIn();
+        }
+    };
+
+
+    const addFavorites = api.favorites.addFavorites.useMutation({
+        onMutate: async (newEntry) => {
+            await utils.favorites.getAll.cancel();
+        },
+        onSuccess: (data) => {
+            console.log("add favorite recipe response:", data);
+            setIsFavoritedState(true);
+        },
+        onError: (error) => {
+            console.log("add favorite recipe error:", error);
+        },
+    });
+
+    const removeFavorite = api.favorites.deleteOne.useMutation({
+        onMutate: async (newEntry) => {
+            await utils.favorites.getAll.cancel();
+        },
+        onSuccess: (data) => {
+            console.log("remove favorite recipe response:", data);
+            setIsFavoritedState(false);
+        },
+        onError: (error) => {
+            console.log("remove favorite recipe error:", error);
+        },
+    });
 
 
     if (!recipe) {
@@ -155,7 +244,6 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                         </article>
                         <div>
 
-
                             <div>
                                 {recipe?.diets?.length > 0 && (
                                     <div className="flex flex-wrap py-6 space-x-2">
@@ -181,7 +269,19 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                                     </div>
                                 )}
                             </div>
-
+                            {!isFavoritedState ? (
+                                <button
+                                    className="flex items-center justify-center py-1 my-6 px-4 text-white font-medium bg-orange-300 hover:bg-orange-400  rounded-lg md:inline-flex"
+                                    onClick={handleFavoriteClick}>
+                                    Add to favorite 💖
+                                </button>
+                            ) : (
+                                <button
+                                    className="flex items-center justify-center py-1 my-6 px-4 text-white font-medium bg-orange-300 hover:bg-orange-400 rounded-lg md:inline-flex"
+                                    onClick={handleFavoriteClick}>
+                                    Remove from favorite 💔
+                                </button>
+                            )}
                             <div className="border-t border-dashed space-y-2 py-10">
                                 {recipe?.extendedIngredients && (
                                     <>
