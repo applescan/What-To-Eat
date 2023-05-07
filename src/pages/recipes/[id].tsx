@@ -149,9 +149,6 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
     }, [session, recipe?.id]); // Include recipe.id as a dependency to re-run the effect when it changes
 
 
-
-
-
     const handleFavoriteClick = async () => {
         if (status === "authenticated") {
             try {
@@ -226,7 +223,23 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                     <div className="max-w-2xl py-16 mx-auto space-y-12 px-10 md:px-8">
                         <article className="space-y-8">
                             <div className="space-y-6">
+
+                                <div className="flex justify-between">    
                                 <h1 className=" text-4xl text-gray-700 font-extrabold mx-auto md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#14b8a6]" >{recipe?.title}</h1>
+                                    <div className="flex items-center">
+                                        <button
+                                            onClick={handleFavoriteClick}
+                                            className="rounded-full bg-indigo-50 shadow-lg p-4 focus:outline-none"
+                                            aria-label="Add to favorites"
+                                        >
+                                            <FiHeart
+                                                size={34}
+                                                fill={isFavoritedState ? 'red' : 'none'}
+                                                stroke={isFavoritedState ? 'red' : 'grey'}
+                                            />
+                                        </button>
+                                    </div>
+                                </div>
                                 <div className="flex flex-col items-start justify-between w-full md:flex-row md:items-center">
                                     <div className="block items-center">
                                         <p className="text-base font-semibold">Servings: <span className="text-base font-bold">{recipe?.servings}</span></p>
@@ -242,46 +255,44 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                                 alt={recipe?.title}
                                 className="object-cover object-center w-ful rounded-3xl items-center mx-auto" />
                         </article>
-                        <div>
 
+                        <div>
                             <div>
                                 {recipe?.diets?.length > 0 && (
-                                    <div className="flex flex-wrap py-6 space-x-2">
+                                    <div className="py-6">
                                         <p className="text-base font-semibold">Diets:</p>
-                                        <ul className="ml-4 space-y-1 list-disc inline">
+                                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 mt-2">
                                             {recipe?.diets.map((diet: any, idx) => (
-                                                <li className="px-3 py-1 mx-1 rounded-lg bg-indigo-400 text-white font-semibold text-base inline" key={idx}>{diet}</li>
+                                                <div
+                                                    className="px-3 py-1 rounded-lg bg-indigo-400 text-white font-semibold text-base"
+                                                    key={idx}
+                                                >
+                                                    {diet}
+                                                </div>
                                             ))}
-                                        </ul>
+                                        </div>
                                     </div>
                                 )}
                             </div>
 
                             <div>
                                 {recipe?.cuisines?.length > 0 && (
-                                    <div className="flex flex-wrap py-6 space-x-2">
+                                    <div className="py-6">
                                         <p className="text-base font-semibold">Cuisines:</p>
-                                        <ul className="ml-4 space-y-1 list-disc inline">
+                                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 mt-2">
                                             {recipe?.cuisines.map((cuisine: any, idx) => (
-                                                <li className="px-3 py-1 mx-1 rounded-lg bg-teal-400 text-white font-semibold text-base inline" key={idx}>{cuisine}</li>
+                                                <div
+                                                    className="px-3 py-1 rounded-lg bg-teal-400 text-white font-semibold text-base"
+                                                    key={idx}
+                                                >
+                                                    {cuisine}
+                                                </div>
                                             ))}
-                                        </ul>
+                                        </div>
                                     </div>
                                 )}
                             </div>
-                            {!isFavoritedState ? (
-                                <button
-                                    className="flex items-center justify-center py-1 my-6 px-4 text-white font-medium bg-orange-300 hover:bg-orange-400  rounded-lg md:inline-flex"
-                                    onClick={handleFavoriteClick}>
-                                    Add to favorite 💖
-                                </button>
-                            ) : (
-                                <button
-                                    className="flex items-center justify-center py-1 my-6 px-4 text-white font-medium bg-orange-300 hover:bg-orange-400 rounded-lg md:inline-flex"
-                                    onClick={handleFavoriteClick}>
-                                    Remove from favorite 💔
-                                </button>
-                            )}
+
                             <div className="border-t border-dashed space-y-2 py-10">
                                 {recipe?.extendedIngredients && (
                                     <>

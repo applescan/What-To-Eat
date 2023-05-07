@@ -105,7 +105,6 @@ const GroceryCard: React.FC<RecipeCardProps> = ({ id, img, title, href, isFavori
                         {
                             userId: session?.user.id,
                             title: newEntry.title,
-                            checked: false,
                         },
                         ...prevEntries,
                     ];
@@ -114,7 +113,6 @@ const GroceryCard: React.FC<RecipeCardProps> = ({ id, img, title, href, isFavori
                         {
                             userId: session?.user.id,
                             title: newEntry.title,
-                            checked: false,
                         },
                     ];
                 }
@@ -143,21 +141,24 @@ const GroceryCard: React.FC<RecipeCardProps> = ({ id, img, title, href, isFavori
                             Recipe
                         </span>
                         <div className="flex justify-between">
-                            <h2 className="text-xl font-semibold tracking-wide pr-6">
+                            <h2 className="text-xl font-semibold tracking-wide pr-6 flex-1">
                                 {title}
                             </h2>
-                            <button
-                                onClick={handleFavoriteClick}
-                                className="text-red-400 hover:text-red-600"
-                                aria-label="Add to favorites"
-                            >
-                                <FiHeart
-                                    size={24}
-                                    fill={isFavorited ? 'red' : 'none'}
-                                    stroke="currentColor"
-                                />
-                            </button>
+                            <div className="flex items-center">
+                                <button
+                                    onClick={handleFavoriteClick}
+                                    className="rounded-full bg-white shadow-md p-2 focus:outline-none"
+                                    aria-label="Add to favorites"
+                                >
+                                    <FiHeart
+                                        size={24}
+                                        fill={isFavorited ? 'red' : 'none'}
+                                        stroke={isFavorited ? 'red' : 'grey'}
+                                    />
+                                </button>
+                            </div>
                         </div>
+
                         <br></br>
                         <div>
                             <span className="block text-sm pb-2 font-medium tracking-widest uppercase text-indigo-400">

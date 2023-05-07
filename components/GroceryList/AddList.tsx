@@ -22,7 +22,6 @@ export default function AddList() {
                         {
                             userId: session?.user.id,
                             title: newEntry.title,
-                            checked: false,
                         },
                         ...prevEntries,
                     ];
@@ -31,7 +30,6 @@ export default function AddList() {
                         {
                             userId: session?.user.id,
                             title: newEntry.title,
-                            checked: false,
                         },
                     ];
                 }

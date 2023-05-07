@@ -91,21 +91,24 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ id, title, img, href, isFavorit
                             Recipe
                         </span>
                         <div className="flex justify-between">
-                            <h2 className="text-xl font-semibold tracking-wide pr-6">
+                            <h2 className="text-xl font-semibold tracking-wide pr-6 flex-1">
                                 {title}
                             </h2>
-                            <button
-                                onClick={handleFavoriteClick}
-                                className="text-red-400 hover:text-red-600"
-                                aria-label="Add to favorites"
-                            >
-                                <FiHeart
-                                    size={24}
-                                    fill={isFavorited ? 'red' : 'none'}
-                                    stroke="currentColor"
-                                />
-                            </button>
+                            <div className="flex items-center">
+                                <button
+                                    onClick={handleFavoriteClick}
+                                    className="rounded-full bg-white shadow-md p-2 focus:outline-none"
+                                    aria-label="Add to favorites"
+                                >
+                                    <FiHeart
+                                        size={24}
+                                        fill={isFavorited ? 'red' : 'none'}
+                                        stroke={isFavorited ? 'red' : 'grey'}
+                                    />
+                                </button>
+                            </div>
                         </div>
+
                     </div>
                 </div>
                 <a

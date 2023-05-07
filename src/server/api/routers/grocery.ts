@@ -38,7 +38,6 @@ export const groceryRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         title: z.string(),
-        checked: z.boolean(),
       })
     )
     .mutation(async ({ ctx, input }) => {

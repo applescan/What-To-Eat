@@ -148,13 +148,14 @@ const GroceryPage = () => {
 
                             <br></br>
 
-                            <p className="mx-auto text-gray-800 font-semibold text-center text-xl pt-6">
+                            <p className="mx-auto text-gray-800 font-semibold text-center text-xl py-12">
                                 or add groceries from{" "}
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#14b8a6]">
                                     your favorites recipes!
                                 </span>
                             </p>
 
+                            <br></br>
                             {favoriteRecipesDetails.length > 0 ? (
                                 <ul className="grid gap-16 sm:grid-cols-2 lg:grid-cols-3">
                                     {favoriteRecipesDetails.map((recipe) => (
