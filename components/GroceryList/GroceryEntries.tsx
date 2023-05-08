@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { api } from '../../src/utils/api';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Loading from 'components/Loading';
 
 interface GroceryEntry {
@@ -9,19 +9,12 @@ interface GroceryEntry {
 }
 
 export default function GroceryEntries() {
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const { data: groceryEntries, isLoading } = api.grocery.getAll.useQuery();
-
-  useEffect(() => {
+  const [selectedIds, setSelectedIds] = useState<string[]>(() => {
     const storedIds = localStorage.getItem('selectedIds');
-    if (storedIds) {
-      setSelectedIds(JSON.parse(storedIds));
-    }
-  }, []);
+    return storedIds ? JSON.parse(storedIds) : [];
+  });
 
-  useEffect(() => {
-    localStorage.setItem('selectedIds', JSON.stringify(selectedIds));
-  }, [selectedIds]);
+  const { data: groceryEntries, isLoading } = api.grocery.getAll.useQuery();
 
   const updateOne = (entry: GroceryEntry) => {
     if (selectedIds.includes(entry.id)) {
@@ -29,8 +22,11 @@ export default function GroceryEntries() {
     } else {
       setSelectedIds((prevSelected) => [...prevSelected, entry.id]);
     }
-    localStorage.setItem('selectedIds', JSON.stringify(selectedIds));
   };
+
+  useEffect(() => {
+    localStorage.setItem('selectedIds', JSON.stringify(selectedIds));
+  }, [selectedIds]);
 
   if (isLoading) return <div> <Loading></Loading></div>;
 
@@ -42,7 +38,12 @@ export default function GroceryEntries() {
     columns[columnIdx].push(
       <div key={index} className="flex items-center">
         <label>
-          <input type="checkbox" onChange={() => updateOne(entry)} className="mr-2" checked={selectedIds.includes(entry.id)} />
+          <input
+            type="checkbox"
+            onChange={() => updateOne(entry)}
+            className="mr-2"
+            checked={selectedIds.includes(entry.id)}
+          />
           <span className="font-semibold text-m">{entry.title}</span>
         </label>
       </div>

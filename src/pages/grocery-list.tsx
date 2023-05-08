@@ -175,7 +175,6 @@ const GroceryPage = () => {
                                 <p className="text-center text-gray-700 py-6">You dont have any favorite recipes yet 😓 Please add some from your reccomendations. </p>
                             )}
 
-
                         </div>
                     </div>
                 </div>

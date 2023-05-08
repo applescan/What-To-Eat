@@ -224,12 +224,12 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                         <article className="space-y-8">
                             <div className="space-y-6">
 
-                                <div className="flex justify-between">    
-                                <h1 className=" text-4xl text-gray-700 font-extrabold mx-auto md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#14b8a6]" >{recipe?.title}</h1>
+                                <div className="flex justify-around">    
+                                <h1 className=" text-4xl text-gray-700 font-extrabold mr-3 md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#14b8a6]" >{recipe?.title}</h1>
                                     <div className="flex items-center">
                                         <button
                                             onClick={handleFavoriteClick}
-                                            className="rounded-full bg-indigo-50 shadow-lg p-4 focus:outline-none"
+                                            className="rounded-full bg-indigo-50 shadow-lg p-3 focus:outline-none"
                                             aria-label="Add to favorites"
                                         >
                                             <FiHeart
