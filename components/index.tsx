@@ -69,7 +69,6 @@ export const List: NextPage<CardProps> = ({ children }) => {
         <input
           type="checkbox"
           className="w-4 h-4 border-gray-300 rounded mr-4"
-          defaultChecked={item.checked as boolean}
           onChange={() => onUpdate?.(item)}
         />
         <h2 className="text-gray-600 tracking-wide text-sm">{item.title}</h2>
