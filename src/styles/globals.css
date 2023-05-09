@@ -91,10 +91,10 @@ a {
 }
 
 .w-8.h-8.rounded-full.border-2 {
-  transition: background-color 0.6s ease;
+  transition: background-color 0.5s ease;
 }
 
 /* Animate the border of the lines */
 .hr-transition {
-  transition: border-color 0.6s ease;
+  transition: border-color 0.5s ease;
 }
