@@ -78,3 +78,23 @@ a {
     height: 15px;
   }
 }
+
+.hithere:hover {
+  animation: hithere 1s ease infinite;
+}
+@keyframes hithere {
+  30% { transform: scale(1.6); }
+  40%, 60% { transform: rotate(-20deg) scale(1.6); }
+  50% { transform: rotate(20deg) scale(1.6); }
+  70% { transform: rotate(0deg) scale(1.6); }
+  100% { transform: scale(1); }
+}
+
+.w-8.h-8.rounded-full.border-2 {
+  transition: background-color 0.6s ease;
+}
+
+/* Animate the border of the lines */
+.hr-transition {
+  transition: border-color 0.6s ease;
+}

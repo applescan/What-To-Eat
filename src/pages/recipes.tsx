@@ -5,6 +5,7 @@ import Snackbar from 'components/Snackbar';
 import Link from 'next/link';
 import { api } from "../../src/utils/api";
 import { useSession } from "next-auth/react";
+import Loading from 'components/Loading';
 
 
 type FormData = {
@@ -39,7 +40,7 @@ export default function Recipes() {
     useEffect(() => {
         // Retrieve form data from local storage
         let formValues: FormData | any = null;
-    
+
         if (typeof window !== 'undefined') {
             const formDataString = localStorage.getItem('formValues');
             if (formDataString) {
@@ -50,18 +51,18 @@ export default function Recipes() {
                 return;
             }
         }
-    
+
         // Update dietary requirement text
         const dietaryText = formValues.dietary == " " ? "No dietary requirement" : formValues.dietary;
         setDiet({ ...formValues, dietary: dietaryText });
-    
+
         // Make API call to Spoonacular
         const fetchRecipes = async () => {
             try {
                 const res = await Axios.get(
                     `https://api.spoonacular.com/recipes/complexSearch?query=${formValues.ingredients}&diet=${formValues.dietary}&ignorePantry=${formValues.pantry}&apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&number=9`
                 );
-    
+
                 // Extract recipe data from response
                 const recipes = res.data.results.map((recipe: any) => ({
                     id: recipe.id,
@@ -69,10 +70,10 @@ export default function Recipes() {
                     img: recipe.image,
                     href: `/recipes/${recipe.id}`
                 }));
-    
+
                 // Set recipe data in state
                 setRecipes(recipes);
-    
+
                 // Show Snackbar if no recipes found
                 if (recipes.length === 0) {
                     setSnackbarOpen(true);
@@ -84,10 +85,10 @@ export default function Recipes() {
                 setError("Daily quota has been reached, please come back tomorrow!")
             }
         };
-    
+
         fetchRecipes();
     }, []);
-    
+
 
 
     useEffect(() => {
@@ -163,21 +164,28 @@ export default function Recipes() {
                         <Snackbar message={error} link='/get-started' />
                     )}
                 </div>
-                <div className="my-12 flex justify-center">
-                    <ul className="grid gap-16 sm:grid-cols-2 lg:grid-cols-3">
-                        {recipes.map((recipe) => (
-                            <RecipeCard
-                                key={recipe.id}
-                                id={recipe.id}
-                                title={recipe.title}
-                                img={recipe.img}
-                                href={recipe.href}
-                                isFavorited={favoriteRecipes.includes(recipe.id)}
-                                onFavoriteClick={handleFavoriteClick}
-                            />
-                        ))}
-                    </ul>
-                </div>
+
+                {recipes.length > 0 ? (
+                    <div className="my-12 flex justify-center">
+                        <ul className="grid gap-16 sm:grid-cols-2 lg:grid-cols-3">
+                            {recipes.map((recipe) => (
+                                <RecipeCard
+                                    key={recipe.id}
+                                    id={recipe.id}
+                                    title={recipe.title}
+                                    img={recipe.img}
+                                    href={recipe.href}
+                                    isFavorited={favoriteRecipes.includes(recipe.id)}
+                                    onFavoriteClick={handleFavoriteClick}
+                                />
+                            ))}
+                        </ul>
+                    </div>
+                ) : (
+                    <div className="flex h-screen justify-center items-center">
+                        <Loading></Loading>
+                    </div>
+                )}
 
             </div>
             <div className='pt-10'>

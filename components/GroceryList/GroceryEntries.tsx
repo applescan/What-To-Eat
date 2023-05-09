@@ -28,7 +28,9 @@ export default function GroceryEntries() {
     localStorage.setItem('selectedIds', JSON.stringify(selectedIds));
   }, [selectedIds]);
 
-  if (isLoading) return <div> <Loading></Loading></div>;
+  if (isLoading) return <div className="mx-auto flex items-center">
+    <Loading></Loading>
+  </div>;
 
   const groceryColumns = groceryEntries?.reduce((columns: any, entry: GroceryEntry, index: number) => {
     const columnIdx = Math.floor(index / 5);

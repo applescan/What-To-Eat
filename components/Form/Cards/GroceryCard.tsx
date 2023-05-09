@@ -147,7 +147,7 @@ const GroceryCard: React.FC<RecipeCardProps> = ({ id, img, title, href, isFavori
                             <div className="flex items-center">
                                 <button
                                     onClick={handleFavoriteClick}
-                                    className="rounded-full bg-white shadow-md p-2 focus:outline-none"
+                                    className="rounded-full bg-white shadow-md p-2 focus:outline-none hithere"
                                     aria-label="Add to favorites"
                                 >
                                     <FiHeart

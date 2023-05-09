@@ -124,8 +124,6 @@ const GroceryPage = () => {
                         <Snackbar message={error} link='/' />
                     )}
                 </div>
-            ) : status === "loading" ? (
-                <Loading />
             ) : session ? (
                 <div>
                     <div className="py-14 px-10 md:px-8 bg-[url('../../public/background-4.png')] bg-cover bg-no-repeat min-h-[65vh]">
@@ -156,6 +154,7 @@ const GroceryPage = () => {
                             </p>
 
                             <br></br>
+
                             {favoriteRecipesDetails.length > 0 ? (
                                 <ul className="grid gap-16 sm:grid-cols-2 lg:grid-cols-3">
                                     {favoriteRecipesDetails.map((recipe) => (
@@ -172,7 +171,13 @@ const GroceryPage = () => {
                                     ))}
                                 </ul>
                             ) : (
-                                <p className="text-center text-gray-700 py-6">You dont have any favorite recipes yet 😓 Please add some from your reccomendations. </p>
+                                favoriteRecipesDetails.length === 0 && (Loading ? (
+                                    <div className="mx-auto flex items-center">
+                                        <Loading></Loading>
+                                    </div>
+                                ) : (
+                                    <p className="text-center text-gray-700 py-6">You don't have any favorite recipes yet 😓 Please add some from your recommendations.</p>
+                                ))
                             )}
 
                         </div>

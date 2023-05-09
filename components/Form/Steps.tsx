@@ -17,8 +17,9 @@ const Steps: React.FC<StepperProps> = ({ steps, currentStep }) => {
                     >
                         <div
                             className={`w-8 h-8 rounded-full border-2 flex-none flex items-center justify-center ${currentStep > index + 1
-                                ? "bg-indigo-600 border-indigo-600"
-                                : "" || currentStep === index + 1
+                                ? "bg-indigo-600 border-indigo-600 bg-transition"
+                                : ""
+                                    || currentStep === index + 1
                                     ? "border-indigo-600"
                                     : ""
                                 }`}
@@ -47,13 +48,9 @@ const Steps: React.FC<StepperProps> = ({ steps, currentStep }) => {
                             )}
                         </div>
                         <hr
-                            className={`w-full border ${index + 1 === steps.length
-                                ? "hidden"
-                                : "" || currentStep > index + 1
-                                    ? "border-indigo-600"
-                                    : ""
-                                }`}
+                            className={`w-full border ${index + 1 === steps.length ? "hidden" : "" || currentStep > index + 1 ? "border-indigo-600 hr-transition" : ""}`}
                         />
+
                     </li>
                 ))}
             </ul>

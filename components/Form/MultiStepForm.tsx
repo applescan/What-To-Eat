@@ -11,6 +11,7 @@ type FormValues = {
 };
 
 const MultiStepForm = () => {
+    
     const [formValues, setFormValues] = useState<FormValues>({
         dietary: "",
         ingredients: "",
@@ -92,7 +93,7 @@ const MultiStepForm = () => {
                 <form onSubmit={handleFormSubmit} className="pt-28 pb-20">
                     <div>
                         {step === 1 && (
-                            <div className=" font-semibold text-xl mx-auto">
+                            <div className="hr-transition font-semibold text-xl mx-auto">
                                 <label>
                                     What is your dietary requirement?
                                     <br></br>

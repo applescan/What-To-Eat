@@ -229,7 +229,7 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                                     <div className="flex items-center">
                                         <button
                                             onClick={handleFavoriteClick}
-                                            className="rounded-full bg-indigo-50 shadow-lg p-3 focus:outline-none"
+                                            className="rounded-full bg-indigo-50 shadow-lg p-3 focus:outline-none hithere"
                                             aria-label="Add to favorites"
                                         >
                                             <FiHeart
