@@ -69,7 +69,7 @@ const Recipes: React.FC = () => {
                     id: recipe.id,
                     title: recipe.title,
                     img: recipe.image,
-                    href: `/recipes/${recipe.id}`
+                    href: `/${recipe.id}`
                 }));
 
                 // Set recipe data in state
