@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Logo from "../public/logo.png"
 import Link from "next/link";
+import Button from "./Button";
 
-export default function Footer(): JSX.Element {
+const Footer: React.FC = () => {
 
     interface NavigationItem {
         href: string;
@@ -26,6 +27,7 @@ export default function Footer(): JSX.Element {
             id: 3
         }
     ]
+
     return (
         <footer className="pt-10 bg-teal-50">
             <div className="max-w-screen-xl mx-auto px-4 text-gray-600 md:px-8">
@@ -43,9 +45,8 @@ export default function Footer(): JSX.Element {
                     </p>
                     <div className="items-center gap-x-3 space-y-3 sm:flex sm:justify-center sm:space-y-0">
                         <Link
-                            href={{ pathname: "/get-started" }}
-                            className="flex items-center justify-center gap-x-1 py-2 px-4 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg md:inline-flex">
-                            Get Recipes
+                            href={{ pathname: "/get-started" }}>
+                            <Button name="Get Recipes" isTeal={false} />
                         </Link>
                     </div>
                 </div>
@@ -64,6 +65,8 @@ export default function Footer(): JSX.Element {
                     </ul>
                 </div>
             </div>
-        </footer>
+        </footer >
     )
 }
+
+export default Footer

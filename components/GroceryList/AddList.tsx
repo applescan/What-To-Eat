@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { api } from "../../src/utils/api";
 import GroceryEntries from "./GroceryEntries";
 import React from 'react'
 import Image from "next/image";
 import Plus from "../../public/plus.png"
 
-export default function AddList() {
+
+const AddList: React.FC = () => {
 
     const [title, setTitle] = useState("");
     const { data: session, status } = useSession();
     const utils = api.useContext();
 
-    
     const postMessage = api.grocery.postMessage.useMutation({
         onMutate: async (newEntry) => {
             await utils.grocery.getAll.cancel();
@@ -112,3 +112,5 @@ export default function AddList() {
         </section>
     )
 };
+
+export default AddList

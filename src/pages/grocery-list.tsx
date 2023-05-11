@@ -3,7 +3,7 @@ import Loading from "components/Loading";
 import AddList from "../../components/GroceryList/AddList";
 import Discord from "../../public/discord.png"
 import Image from "next/image";
-import GroceryCard from '../../components/Form/Cards/GroceryCard'
+import GroceryCard from '../../components/Cards/GroceryCard'
 import Axios from "axios";
 import { api } from "../../src/utils/api";
 import React, { useState, useEffect } from 'react';
@@ -40,8 +40,8 @@ interface RecipeProps {
 }
 
 
-const GroceryPage = () => {
-    const { data: session, status } = useSession();
+const GroceryPage: React.FC = () => {
+    const { data: session } = useSession();
     const utils = api.useContext();
     const [error, setError] = useState<string | null>(null);
     const [favoriteRecipes, setFavoriteRecipes] = useState<number[]>([]);

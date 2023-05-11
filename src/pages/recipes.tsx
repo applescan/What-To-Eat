@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import RecipeCard from 'components/Form/Cards/RecipeCard';
+import RecipeCard from 'components/Cards/RecipeCard';
 import Axios from "axios";
 import Snackbar from 'components/Snackbar';
 import Link from 'next/link';
 import { api } from "../../src/utils/api";
 import { useSession } from "next-auth/react";
 import Loading from 'components/Loading';
+import Button from 'components/Button';
 
 
 type FormData = {
@@ -21,7 +22,7 @@ type Recipe = {
     href: string;
 };
 
-export default function Recipes() {
+const Recipes: React.FC = () => {
 
     const [recipes, setRecipes] = useState<Recipe[]>([]);
     const [diet, setDiet] = useState<FormData>({
@@ -89,8 +90,6 @@ export default function Recipes() {
         fetchRecipes();
     }, []);
 
-
-
     useEffect(() => {
         const fetchFavoriteRecipes = async () => {
             try {
@@ -140,7 +139,6 @@ export default function Recipes() {
     };
 
 
-
     return (
         <div className="py-14 px-10 md:px-8 bg-[url('../../public/background-3.png')] bg-contain bg-no-repeat">
             <div className="max-w-screen-xl mx-auto px-4  text-gray-600 md:px-8">
@@ -188,14 +186,16 @@ export default function Recipes() {
                 )}
 
             </div>
-            <div className='pt-10'>
-                <Link className="mx-auto flex justify-center gap-x-2 py-2 px-10 w-full text-sm text-white font-medium bg-teal-400 hover:bg-teal-500 active:bg-teal-600 duration-150 rounded-lg sm:mt-0 sm:w-1/4" href={{ pathname: "/get-started" }}>
-                    Back </Link>
+            <div className='pt-10 mx-auto flex items-center justify-center'>
+                <Link href={{ pathname: "/get-started" }} >
+                    <Button name="Back" isTeal={true} />
+                </Link>
             </div>
         </div>
     )
 }
 
+export default Recipes
 
 
 

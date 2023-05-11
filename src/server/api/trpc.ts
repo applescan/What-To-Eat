@@ -8,14 +8,12 @@ type CreateContextOptions = {
   session: Session | null;
 };
 
-
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     prisma,
   };
 };
-
 
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
@@ -27,7 +25,6 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
     session,
   });
 };
-
 
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
@@ -47,10 +44,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
   },
 });
 
-
 export const createTRPCRouter = t.router;
-
-
 export const publicProcedure = t.procedure;
 
 const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
@@ -64,7 +58,5 @@ const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
     },
   });
 });
-
-
 
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);

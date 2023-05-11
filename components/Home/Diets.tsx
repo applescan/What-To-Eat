@@ -3,7 +3,7 @@ import Diet from "../../public/dietary.png"
 import Kitchen from "../../public/kitchen.png"
 import Food from "../../public/food.png"
 
-export default function Diets(): JSX.Element {
+const Diets: React.FC = () => {
 
     interface StepsItem {
         title: string;
@@ -66,3 +66,5 @@ export default function Diets(): JSX.Element {
         </section>
     )
 }
+
+export default Diets

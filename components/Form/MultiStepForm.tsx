@@ -10,8 +10,8 @@ type FormValues = {
     pantry: boolean | null;
 };
 
-const MultiStepForm = () => {
-    
+const MultiStepForm: React.FC = () => {
+
     const [formValues, setFormValues] = useState<FormValues>({
         dietary: "",
         ingredients: "",

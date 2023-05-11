@@ -5,9 +5,10 @@ import Image from 'next/image';
 import Loading from 'components/Loading';
 import { useState, useEffect } from 'react';
 import Snackbar from 'components/Snackbar';
-import { FiHeart } from 'react-icons/fi';
 import { signIn, useSession } from "next-auth/react";
 import { api } from "../../../src/utils/api";
+import Button from 'components/Button';
+import FavoriteButton from 'components/FavoriteButton';
 
 interface RecipeProps {
     id: number;
@@ -224,20 +225,13 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                         <article className="space-y-8">
                             <div className="space-y-6">
 
-                                <div className="flex justify-around">    
-                                <h1 className=" text-4xl text-gray-700 font-extrabold mr-3 md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#14b8a6]" >{recipe?.title}</h1>
+                                <div className="flex justify-around">
+                                    <h1 className=" text-4xl text-gray-700 font-extrabold mr-3 md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#14b8a6]" >{recipe?.title}</h1>
                                     <div className="flex items-center">
-                                        <button
-                                            onClick={handleFavoriteClick}
-                                            className="rounded-full bg-indigo-50 shadow-lg p-3 focus:outline-none hithere"
-                                            aria-label="Add to favorites"
-                                        >
-                                            <FiHeart
-                                                size={34}
-                                                fill={isFavoritedState ? 'red' : 'none'}
-                                                stroke={isFavoritedState ? 'red' : 'grey'}
-                                            />
-                                        </button>
+                                        <FavoriteButton
+                                            isFavorited={isFavoritedState}
+                                            handleFavoriteClick={handleFavoriteClick}
+                                        />
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-start justify-between w-full md:flex-row md:items-center">
@@ -322,8 +316,11 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                         </div>
                     </div>
                     <div className='my-12 px-10'>
-                        <Link className="mx-auto flex justify-center gap-x-2 py-2 px-10 w-full text-sm text-white font-medium bg-teal-400 hover:bg-teal-500 active:bg-teal-600 duration-150 rounded-lg sm:mt-0 sm:w-1/4" href={{ pathname: "/recipes" }}>
-                            Back </Link>
+                        <div className='pt-10 mx-auto flex items-center justify-center'>
+                            <Link href={{ pathname: "/recipes" }} >
+                                <Button name="Back" isTeal={true} />
+                            </Link>
+                        </div>
                     </div>
                 </div>
             )} </>

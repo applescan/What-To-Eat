@@ -3,13 +3,13 @@ import Image from 'next/image';
 import Logo from "public/logo.png"
 import Link from 'next/link';
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Fragment, useState } from 'react'
-import { Dialog, Disclosure, Popover, Transition } from '@headlessui/react'
+import { useState } from 'react'
+import { Dialog, Popover } from '@headlessui/react'
 import {
   Bars3Icon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
-import { PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
+import Button from '../components/Button'
 
 
 export default function Header() {
@@ -31,6 +31,9 @@ export default function Header() {
           </button>
         </div>
         <Popover.Group className="hidden lg:flex lg:gap-x-12">
+          <Link href={{ pathname: '/get-started' }} className="flex items-center justify-center px-6 text-gray-700 font-medium hover:text-indigo-500 active:text-indigo-600 rounded-lg md:inline-flex">
+            Search
+          </Link>
           <Link href={{ pathname: '/recipes' }} className="flex items-center justify-center px-6 text-gray-700 font-medium hover:text-indigo-500 active:text-indigo-600 rounded-lg md:inline-flex">
             Recipe Suggestions
           </Link>
@@ -40,15 +43,11 @@ export default function Header() {
         </Popover.Group>
         {session ? (
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <button className="flex items-center justify-center py-3 px-4 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg md:inline-flex" onClick={() => signOut()}>
-              Logout
-            </button>
+            <Button name="Logout" onClick={() => signOut()} isTeal={false} />
           </div>
         ) : (
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <button className="flex items-center justify-center py-3 px-4 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg md:inline-flex" onClick={() => signIn()}>
-              Login
-            </button>
+            <Button name="Login" onClick={() => signIn()} isTeal={false} />
           </div>
         )}
       </nav>
@@ -69,6 +68,11 @@ export default function Header() {
             <div className="-my-6 divide-y divide-gray-500/10">
               <div className="space-y-2 py-6">
                 <Link
+                  href={{ pathname: "/get-started" }}
+                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
+                  Search
+                </Link>
+                <Link
                   href={{ pathname: "/recipes" }}
                   className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
                   Recipe suggestions
@@ -81,19 +85,11 @@ export default function Header() {
               </div>
               {session ? (
                 <div className="py-6">
-                  <button
-                    className="flex items-center justify-center py-3 px-4 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg md:inline-flex"
-                    onClick={() => signOut()}>
-                    Logout
-                  </button>
+                  <Button name="Logout" onClick={() => signOut()} isTeal={false} />
                 </div>
               ) : (
                 <div className="py-6">
-                  <button
-                    className="flex items-center justify-center py-3 px-4 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg md:inline-flex"
-                    onClick={() => signIn()}>
-                    Login
-                  </button>
+                  <Button name="Login" onClick={() => signIn()} isTeal={false} />
                 </div>
               )}
             </div>

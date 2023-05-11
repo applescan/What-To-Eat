@@ -1,6 +1,6 @@
 import LoginLogout from 'components/GroceryList/LoginLogout';
 
-export default function Login(): JSX.Element {
+const Login: React.FC = () => {
   return (
     <div>
       <LoginLogout />
@@ -8,3 +8,4 @@ export default function Login(): JSX.Element {
   );
 }
 
+export default Login

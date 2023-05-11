@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { FiHeart } from 'react-icons/fi';
 import { signIn, useSession } from "next-auth/react";
-import { api } from "../../../src/utils/api";
+import { api } from "../../src/utils/api";
+import FavoriteButton from 'components/FavoriteButton';
+import LetCookButton from 'components/LetsCookButton';
 
 interface RecipeCardProps {
     id: number;
@@ -70,8 +71,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ id, title, img, href, isFavorit
         },
     });
 
-
-
     return (
         <div className="max-w-xs rounded-md shadow-md bg-indigo-50 ">
             <div className="flex justify-center rounded-xl">
@@ -95,27 +94,16 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ id, title, img, href, isFavorit
                                 {title}
                             </h2>
                             <div className="flex items-center">
-                                <button
-                                    onClick={handleFavoriteClick}
-                                    className="rounded-full bg-white shadow-md p-2 focus:outline-none hithere"
-                                    aria-label="Add to favorites"
-                                >
-                                    <FiHeart
-                                        size={24}
-                                        fill={isFavorited ? 'red' : 'none'}
-                                        stroke={isFavorited ? 'red' : 'grey'}
-                                    />
-                                </button>
+                                <FavoriteButton
+                                    isFavorited={isFavorited}
+                                    handleFavoriteClick={handleFavoriteClick}
+                                />
                             </div>
                         </div>
 
                     </div>
                 </div>
-                <a
-                    href={href}
-                    className="text-white block rounded-lg text-center font-medium leading-6 px-6 py-2 bg-gradient-to-r from-[#6366f1] to-[#14b8a6] hover:bg-teal-400 hover:text-white"
-                >
-                    Let's Cook 🍳</a>
+                <LetCookButton href={href} />
             </div>
         </div>
     );

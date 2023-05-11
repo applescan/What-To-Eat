@@ -8,7 +8,7 @@ interface GroceryEntry {
   title: string;
 }
 
-export default function GroceryEntries() {
+const GroceryEntries: React.FC = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>(() => {
     const storedIds = localStorage.getItem('selectedIds');
     return storedIds ? JSON.parse(storedIds) : [];
@@ -69,3 +69,5 @@ export default function GroceryEntries() {
     </div>
   );
 }
+
+export default GroceryEntries

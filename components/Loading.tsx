@@ -2,7 +2,7 @@ import React from 'react'
 import LoadingImg from '../public/loading.gif'
 import Image from 'next/image'
 
-export default function Loading() {
+const Loading: React.FC = () => {
   return (
     <div className='mx-auto items-center'>
       <Image
@@ -16,3 +16,5 @@ export default function Loading() {
     </div>
   )
 }
+
+export default Loading

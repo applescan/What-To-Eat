@@ -1,7 +1,7 @@
 import HeroBanner from "components/Home/HeroBanner";
 import Diets from "components/Home/Diets";
 
-export default function Index(): JSX.Element {
+const Index: React.FC = () => {
 
   return (
     <>
@@ -10,3 +10,5 @@ export default function Index(): JSX.Element {
     </>
   )
 }
+
+export default Index

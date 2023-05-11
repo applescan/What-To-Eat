@@ -1,12 +1,11 @@
 import { signIn, useSession } from "next-auth/react";
 import Loading from "components/Loading";
-import AddList from "./AddList";
 import Discord from "../../public/discord.png"
 import Image from "next/image";
 import React from 'react'
 import { useRouter } from 'next/router';
 
-export default function LoginLogout() {
+const LoginLogout: React.FC = () => {
     const { data: session, status } = useSession();
     const router = useRouter();
 
@@ -56,3 +55,5 @@ export default function LoginLogout() {
 
     );
 };
+
+export default LoginLogout
