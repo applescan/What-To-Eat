@@ -7,7 +7,7 @@ import { api } from "../../src/utils/api";
 import FavoriteButton from 'components/FavoriteButton';
 import AddToGroceryButton from 'components/AddToGroceryButton';
 import LetCookButton from 'components/LetsCookButton';
-import STATUS from 'constants';
+import STATUS from '~/pages/_constants';
 
 interface RecipeCardProps {
     id: number;

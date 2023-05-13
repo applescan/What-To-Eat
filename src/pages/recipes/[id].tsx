@@ -11,7 +11,7 @@ import Snackbar from 'components/Snackbar';
 import { api } from "../../../src/utils/api";
 import Button from 'components/Button';
 import FavoriteButton from 'components/FavoriteButton';
-import STATUS from '../../../constants';
+import STATUS from '../_constants';
 
 interface RecipeProps {
     id: number;
@@ -66,6 +66,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
         };
     } catch (error) {
         //console.log("Error fetching static paths:", error);
+        console.error(error)
         throw new Error("Failed to fetch static paths");
     }
 }
