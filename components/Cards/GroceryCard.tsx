@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { signIn, useSession } from "next-auth/react";
+
+//local imports
 import { api } from "../../src/utils/api";
 import FavoriteButton from 'components/FavoriteButton';
 import AddToGroceryButton from 'components/AddToGroceryButton';
 import LetCookButton from 'components/LetsCookButton';
+import STATUS from '~/pages/constants';
 
 interface RecipeCardProps {
     id: number;
@@ -28,24 +31,24 @@ const GroceryCard: React.FC<RecipeCardProps> = ({ id, img, title, href, isFavori
 
     const handleFavoriteClick = async () => {
         onFavoriteClick(id);
-        if (status === "authenticated") {
+        if (status === STATUS.AUTHENTICATE) {
             try {
                 if (isFavoritedState) {
                     const data = await removeFavorite.mutate({
                         id,
                     });
-                    console.log("remove favorite recipe response:", data);
+                    //console.log("remove favorite recipe response:", data);
                     setIsFavoritedState(false);
                 } else {
                     const data = await addFavorites.mutate({
                         id,
                         title,
                     });
-                    console.log("add favorite recipe response:", data);
+                    //console.log("add favorite recipe response:", data);
                     setIsFavoritedState(true);
                 }
             } catch (error) {
-                console.log("favorite recipe error:", error);
+                //console.log("favorite recipe error:", error);
             }
         } else {
             signIn();
@@ -62,10 +65,10 @@ const GroceryCard: React.FC<RecipeCardProps> = ({ id, img, title, href, isFavori
         for (const groceryItem of groceryList) {
             postMessage.mutate(groceryItem, {
                 onSuccess: () => {
-                    console.log("Added grocery item to the list successfully");
+                    // console.log("Added grocery item to the list successfully");
                 },
                 onError: (error) => {
-                    console.error("Failed to add grocery item to the list:", error);
+                    // console.error("Failed to add grocery item to the list:", error);
                 },
             });
         }
@@ -77,11 +80,11 @@ const GroceryCard: React.FC<RecipeCardProps> = ({ id, img, title, href, isFavori
             await utils.favorites.getAll.cancel();
         },
         onSuccess: (data) => {
-            console.log("add favorite recipe response:", data);
+            //console.log("add favorite recipe response:", data);
             setIsFavoritedState(true);
         },
         onError: (error) => {
-            console.log("add favorite recipe error:", error);
+            //console.log("add favorite recipe error:", error);
         },
     });
 
@@ -90,37 +93,41 @@ const GroceryCard: React.FC<RecipeCardProps> = ({ id, img, title, href, isFavori
             await utils.favorites.getAll.cancel();
         },
         onSuccess: (data) => {
-            console.log("remove favorite recipe response:", data);
+            //console.log("remove favorite recipe response:", data);
             setIsFavoritedState(false);
         },
         onError: (error) => {
-            console.log("remove favorite recipe error:", error);
+            //console.log("remove favorite recipe error:", error);
         },
     });
 
     const postMessage = api.grocery.postMessage.useMutation({
         onMutate: async (newEntry) => {
-            await utils.grocery.getAll.cancel();
-            utils.grocery.getAll.setData(undefined, (prevEntries: any) => {
-                if (prevEntries) {
+            try {
+                await utils.grocery.getAll.cancel();
+                utils.grocery.getAll.setData(undefined, (prevEntries: any) => {
+                    if (prevEntries) {
+                        return [
+                            {
+                                userId: session?.user.id,
+                                title: newEntry.title,
+                            },
+                            ...prevEntries,
+                        ];
+                    }
                     return [
                         {
                             userId: session?.user.id,
                             title: newEntry.title,
                         },
-                        ...prevEntries,
                     ];
-                } else {
-                    return [
-                        {
-                            userId: session?.user.id,
-                            title: newEntry.title,
-                        },
-                    ];
-                }
-            });
+                });
+            } catch (error) {
+                console.error(error);
+            }
         }
     });
+
 
     return (
         <div className="max-w-m rounded-md shadow-md bg-indigo-50 ">

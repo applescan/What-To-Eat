@@ -1,6 +1,8 @@
 import Image from "next/image";
-import Logo from "../public/logo.png"
 import Link from "next/link";
+
+//local imports
+import Logo from "../public/logo.png"
 import Button from "./Button";
 
 const Footer: React.FC = () => {

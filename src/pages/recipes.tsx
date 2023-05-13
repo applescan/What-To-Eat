@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import RecipeCard from 'components/Cards/RecipeCard';
 import Axios from "axios";
-import Snackbar from 'components/Snackbar';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { api } from "../../src/utils/api";
 import { useSession } from "next-auth/react";
+
+//local imports
+import Snackbar from 'components/Snackbar'
+import { api } from "../../src/utils/api";
+import RecipeCard from 'components/Cards/RecipeCard';
 import Loading from 'components/Loading';
 import Button from 'components/Button';
 
@@ -49,7 +51,6 @@ const Recipes: React.FC = () => {
             } else {
                 setSnackbarOpen(true);
                 setError("Please select your ingredients and dietary requirements!");
-                return;
             }
         }
 
@@ -90,6 +91,7 @@ const Recipes: React.FC = () => {
         fetchRecipes();
     }, []);
 
+
     useEffect(() => {
         const fetchFavoriteRecipes = async () => {
             try {
@@ -101,12 +103,13 @@ const Recipes: React.FC = () => {
                         favoritesIds?.includes(id)
                     );
                     setFavoriteRecipes(favoriteRecipeIds);
-                    console.log("User's favorite recipes:", favoriteRecipeIds);
+                    //console.log("User's favorite recipes:", favoriteRecipeIds);
                 } else {
                     setFavoriteRecipes([]);
                 }
             } catch (error) {
-                console.log("Error fetching favorites", error);
+                console.error(error)
+                //console.log("Error fetching favorites", error);
             }
         };
 
@@ -123,7 +126,8 @@ const Recipes: React.FC = () => {
             try {
                 await api.favorites.deleteOne.useMutation();
             } catch (error) {
-                console.log("Error deleting favorite", error);
+                console.error(error)
+                //console.log("Error deleting favorite", error);
             }
         } else {
             // Add recipe to favorites if not already favorited
@@ -133,7 +137,8 @@ const Recipes: React.FC = () => {
             try {
                 await api.favorites.addFavorites.useMutation();
             } catch (error) {
-                console.log("Error adding favorite", error);
+                console.error(error)
+                //console.log("Error adding favorite", error);
             }
         }
     };

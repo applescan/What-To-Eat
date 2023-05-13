@@ -1,6 +1,6 @@
 import MultiStepForm from "components/Form/MultiStepForm"
 
-const Dietary: React.FC = () => {
+const GetStarted: React.FC = () => {
 
   return (
     <div className="min-h-full bg-[url('../../public/background-2.gif')] px-10 md:px-4 bg-cover">
@@ -9,4 +9,4 @@ const Dietary: React.FC = () => {
   )
 }
 
-export default Dietary
+export default GetStarted

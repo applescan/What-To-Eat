@@ -1,9 +1,12 @@
+import React from 'react'
+import { useRouter } from 'next/router';
 import { signIn, useSession } from "next-auth/react";
+
+//local imports
 import Loading from "components/Loading";
 import Discord from "../../public/discord.png"
 import Image from "next/image";
-import React from 'react'
-import { useRouter } from 'next/router';
+
 
 const LoginLogout: React.FC = () => {
     const { data: session, status } = useSession();

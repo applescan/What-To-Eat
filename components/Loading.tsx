@@ -1,6 +1,8 @@
 import React from 'react'
-import LoadingImg from '../public/loading.gif'
 import Image from 'next/image'
+
+//local import
+import LoadingImg from '../public/loading.gif'
 
 const Loading: React.FC = () => {
   return (

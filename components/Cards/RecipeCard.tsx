@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { signIn, useSession } from "next-auth/react";
+
+//local imports
 import { api } from "../../src/utils/api";
 import FavoriteButton from 'components/FavoriteButton';
 import LetCookButton from 'components/LetsCookButton';
+import STATUS from '~/pages/constants';
 
 interface RecipeCardProps {
     id: number;
@@ -21,24 +24,25 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ id, title, img, href, isFavorit
 
     const handleFavoriteClick = async () => {
         onFavoriteClick(id);
-        if (status === "authenticated") {
+        if (status === STATUS.AUTHENTICATE) {
             try {
                 if (isFavoritedState) {
                     const data = await removeFavorite.mutate({
                         id,
                     });
-                    console.log("remove favorite recipe response:", data);
+                    //console.log("remove favorite recipe response:", data);
                     setIsFavoritedState(false);
                 } else {
                     const data = await addFavorites.mutate({
                         id,
                         title,
                     });
-                    console.log("add favorite recipe response:", data);
+                    //console.log("add favorite recipe response:", data);
                     setIsFavoritedState(true);
                 }
             } catch (error) {
-                console.log("favorite recipe error:", error);
+                //console.log("favorite recipe error:", error);
+                console.error(error)
             }
         } else {
             signIn();
@@ -50,11 +54,12 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ id, title, img, href, isFavorit
             await utils.favorites.getAll.cancel();
         },
         onSuccess: (data) => {
-            console.log("add favorite recipe response:", data);
+            //console.log("add favorite recipe response:", data);
             setIsFavoritedState(true);
         },
         onError: (error) => {
-            console.log("add favorite recipe error:", error);
+            //console.log("add favorite recipe error:", error);
+            console.error(error)
         },
     });
 
@@ -63,11 +68,12 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ id, title, img, href, isFavorit
             await utils.favorites.getAll.cancel();
         },
         onSuccess: (data) => {
-            console.log("remove favorite recipe response:", data);
+            //console.log("remove favorite recipe response:", data);
             setIsFavoritedState(false);
         },
         onError: (error) => {
-            console.log("remove favorite recipe error:", error);
+            //console.log("remove favorite recipe error:", error);
+            console.error(error)
         },
     });
 

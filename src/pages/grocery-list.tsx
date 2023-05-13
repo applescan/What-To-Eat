@@ -1,12 +1,14 @@
+import Axios from "axios";
 import { signIn, useSession } from "next-auth/react";
+import React, { useState, useEffect } from 'react';
+import Image from "next/image";
+
+//local import
 import Loading from "components/Loading";
 import AddList from "../../components/GroceryList/AddList";
 import Discord from "../../public/discord.png"
-import Image from "next/image";
 import GroceryCard from '../../components/Cards/GroceryCard'
-import Axios from "axios";
 import { api } from "../../src/utils/api";
-import React, { useState, useEffect } from 'react';
 import Snackbar from 'components/Snackbar';
 
 interface RecipeProps {
@@ -50,14 +52,22 @@ const GroceryPage: React.FC = () => {
 
     useEffect(() => {
         const fetchFavorites = async () => {
-            // Fetch favorite recipe IDs
-            const response = await utils.favorites.getAll.fetch();
-            const favoritesIds = response?.map((favorite) => favorite.id);
-            setFavoriteRecipes(favoritesIds ?? []);
+            try {
+                // Fetch favorite recipe IDs
+                const response = await utils.favorites.getAll.fetch();
+                const favoritesIds = response?.map((favorite) => favorite.id);
+                setFavoriteRecipes(favoritesIds ?? []);
+            } catch (error) {
+                console.error(error)
+                //console.log("Error fetching favorites:", error);
+                // Handle the error here or set a default value for favoriteRecipes
+                setFavoriteRecipes([]);
+            }
         };
 
         fetchFavorites();
     }, []);
+
 
     useEffect(() => {
         const fetchRecipeDetails = async () => {
@@ -79,9 +89,16 @@ const GroceryPage: React.FC = () => {
                         return null;
                     })
             );
-            const recipeDetailsResponses = await Promise.all(recipeDetailsPromises);
-            const recipeDetails = recipeDetailsResponses.filter((response) => response !== null);
-            setFavoriteRecipesDetails(recipeDetails as RecipeProps[]);
+
+            try {
+                const recipeDetailsResponses = await Promise.all(recipeDetailsPromises);
+                const recipeDetails = recipeDetailsResponses.filter((response) => response !== null);
+                setFavoriteRecipesDetails(recipeDetails as RecipeProps[]);
+            } catch (error) {
+                console.error(error)
+                //console.log("Error fetching recipe details:", error);
+                setFavoriteRecipesDetails([]);
+            }
         };
 
         if (favoriteRecipes.length > 0) {
@@ -100,7 +117,8 @@ const GroceryPage: React.FC = () => {
             try {
                 await api.favorites.deleteOne.useMutation();
             } catch (error) {
-                console.log("Error deleting favorite", error);
+                //console.log("Error deleting favorite", error);
+                console.error(error)
             }
         } else {
             // Add recipe to favorites if not already favorited
@@ -110,7 +128,8 @@ const GroceryPage: React.FC = () => {
             try {
                 await api.favorites.addFavorites.useMutation();
             } catch (error) {
-                console.log("Error adding favorite", error);
+                console.error(error)
+                //console.log("Error adding favorite", error);
             }
         }
     };

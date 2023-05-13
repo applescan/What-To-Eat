@@ -1,4 +1,6 @@
 import Image from "next/image";
+
+//local imports
 import Diet from "../../public/dietary.png"
 import Kitchen from "../../public/kitchen.png"
 import Food from "../../public/food.png"

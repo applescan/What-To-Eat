@@ -1,20 +1,22 @@
 import React from 'react'
-import Image from 'next/image';
-import Logo from "public/logo.png"
-import Link from 'next/link';
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState } from 'react'
+import Image from 'next/image';
+import Link from 'next/link';
 import { Dialog, Popover } from '@headlessui/react'
 import {
   Bars3Icon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
+
+//local imports
+import Logo from "public/logo.png"
 import Button from '../components/Button'
 
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   return (
     <header className="bg-white">

@@ -1,14 +1,17 @@
+import { useState, useEffect } from 'react';
+import { signIn, useSession } from "next-auth/react";
 import { GetStaticProps, GetStaticPaths } from 'next';
 import Axios from "axios";
 import Link from "next/link";
 import Image from 'next/image';
+
+//local imports
 import Loading from 'components/Loading';
-import { useState, useEffect } from 'react';
 import Snackbar from 'components/Snackbar';
-import { signIn, useSession } from "next-auth/react";
 import { api } from "../../../src/utils/api";
 import Button from 'components/Button';
 import FavoriteButton from 'components/FavoriteButton';
+import STATUS from '../constants';
 
 interface RecipeProps {
     id: number;
@@ -46,20 +49,25 @@ interface RecipePageProps {
 
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    // Fetch recipe IDs
-    const res = await Axios.get(
-        `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&number=9`
-    );
+    try {
+        // Fetch recipe IDs
+        const res = await Axios.get(
+            `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&number=9`
+        );
 
-    const recipeIds = res.data.results.map((recipe: any) => recipe.id);
+        const recipeIds = res.data.results.map((recipe: any) => recipe.id);
 
-    // Generate paths for each recipe ID
-    const paths = recipeIds.map((id: number) => ({ params: { id: id.toString() } }));
+        // Generate paths for each recipe ID
+        const paths = recipeIds.map((id: number) => ({ params: { id: id.toString() } }));
 
-    return {
-        paths,
-        fallback: true,
-    };
+        return {
+            paths,
+            fallback: true,
+        };
+    } catch (error) {
+        //console.log("Error fetching static paths:", error);
+        throw new Error("Failed to fetch static paths");
+    }
 }
 
 export const getStaticProps: GetStaticProps<RecipePageProps, { id: string }> = async ({ params }) => {
@@ -69,19 +77,23 @@ export const getStaticProps: GetStaticProps<RecipePageProps, { id: string }> = a
             `https://api.spoonacular.com/recipes/${params!.id}/information?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}`
         );
 
+        const { id, title, image, servings, readyInMinutes,
+            aggregateLikes, healthScore, analyzedInstructions,
+            cuisines, diets, instructions, extendedIngredients } = res.data
+
         const recipe: RecipeProps = {
-            id: res.data.id,
-            title: res.data.title,
-            image: res.data.image,
-            servings: res.data.servings,
-            readyInMinutes: res.data.readyInMinutes,
-            aggregateLikes: res.data.aggregateLikes,
-            healthScore: res.data.healthScore,
-            analyzedInstructions: res.data.analyzedInstructions,
-            cuisines: res.data.cuisines,
-            diets: res.data.diets,
-            instructions: res.data.instructions,
-            extendedIngredients: res.data.extendedIngredients,
+            id: id,
+            title: title,
+            image: image,
+            servings: servings,
+            readyInMinutes: readyInMinutes,
+            aggregateLikes: aggregateLikes,
+            healthScore: healthScore,
+            analyzedInstructions: analyzedInstructions,
+            cuisines: cuisines,
+            diets: diets,
+            instructions: instructions,
+            extendedIngredients: extendedIngredients,
         };
 
         return {
@@ -103,7 +115,6 @@ export const getStaticProps: GetStaticProps<RecipePageProps, { id: string }> = a
 const RecipePage = ({ recipe }: RecipePageProps) => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [error, setError] = useState('');
-    const [favoriteRecipes, setFavoriteRecipes] = useState<number[]>([]);
     const [isFavoritedState, setIsFavoritedState] = useState(false);
     const { data: session, status } = useSession();
     const utils = api.useContext();
@@ -115,7 +126,6 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                 // Make the API call here
             } catch (error) {
                 console.error(error);
-
                 setSnackbarOpen(true);
                 setError("Daily quota has been reached, please come back tomorrow!");
             }
@@ -131,44 +141,42 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                     const response = await utils.favorites.getAll.fetch();
                     const favoritesIds = response?.map((favorite) => favorite.id);
 
-                    console.log("User's favorite recipes:", favoritesIds);
+                    //console.log("User's favorite recipes:", favoritesIds);
 
                     // Check if the recipe is among the user's favorite recipes
                     const isFavorited = favoritesIds?.includes(recipe.id);
                     setIsFavoritedState(isFavorited ?? false);
-
-                } else {
-                    setIsFavoritedState(false);
                 }
             } catch (error) {
-                console.log("Error fetching favorites", error);
+                //console.log("Error fetching favorites", error); // always delete console log!! sebelum deploy production
+                console.error(error)
             }
         };
 
         fetchFavoriteRecipes();
-        console.log(isFavoritedState);
+        //console.log(isFavoritedState);
     }, [session, recipe?.id]); // Include recipe.id as a dependency to re-run the effect when it changes
 
 
     const handleFavoriteClick = async () => {
-        if (status === "authenticated") {
+        if (status === STATUS.AUTHENTICATE) {
             try {
                 if (isFavoritedState) {
                     const data = await removeFavorite.mutate({
                         id: recipe.id,
                     });
-                    console.log("remove favorite recipe response:", data);
+                    //console.log("remove favorite recipe response:", data);
                     setIsFavoritedState(false);
                 } else {
                     const data = await addFavorites.mutate({
                         id: recipe.id,
                         title: recipe.title,
                     });
-                    console.log("add favorite recipe response:", data);
+                    //console.log("add favorite recipe response:", data);
                     setIsFavoritedState(true);
                 }
             } catch (error) {
-                console.log("favorite recipe error:", error);
+                //console.log("favorite recipe error:", error);
             }
         } else {
             signIn();
@@ -181,11 +189,12 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
             await utils.favorites.getAll.cancel();
         },
         onSuccess: (data) => {
-            console.log("add favorite recipe response:", data);
+            //console.log("add favorite recipe response:", data);
             setIsFavoritedState(true);
         },
         onError: (error) => {
-            console.log("add favorite recipe error:", error);
+            //console.log("add favorite recipe error:", error);
+            console.error(error)
         },
     });
 
@@ -194,11 +203,12 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
             await utils.favorites.getAll.cancel();
         },
         onSuccess: (data) => {
-            console.log("remove favorite recipe response:", data);
+            //console.log("remove favorite recipe response:", data);
             setIsFavoritedState(false);
         },
         onError: (error) => {
-            console.log("remove favorite recipe error:", error);
+            //console.log("remove favorite recipe error:", error);
+            console.error(error)
         },
     });
 

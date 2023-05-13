@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+
+//local imports
 import { api } from '../../src/utils/api';
-import { useState } from 'react';
 import Loading from 'components/Loading';
 
 interface GroceryEntry {
@@ -17,12 +18,14 @@ const GroceryEntries: React.FC = () => {
   const { data: groceryEntries, isLoading } = api.grocery.getAll.useQuery();
 
   const updateOne = (entry: GroceryEntry) => {
-    if (selectedIds.includes(entry.id)) {
-      setSelectedIds((prevSelected) => prevSelected.filter((id) => id !== entry.id));
-    } else {
-      setSelectedIds((prevSelected) => [...prevSelected, entry.id]);
-    }
+    setSelectedIds((prevSelected) => {
+      if (selectedIds.includes(entry.id)) {
+        return prevSelected.filter((id) => id !== entry.id);
+      }
+      return [...prevSelected, entry.id];
+    });
   };
+
 
   useEffect(() => {
     localStorage.setItem('selectedIds', JSON.stringify(selectedIds));

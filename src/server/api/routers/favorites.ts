@@ -11,7 +11,8 @@ export const favoritesRouter = createTRPCRouter({
         },
       });
     } catch (error) {
-      console.log("error", error);
+      console.error(error)
+      //console.log("error", error);
     }
   }),
   addFavorites: protectedProcedure
@@ -32,7 +33,8 @@ export const favoritesRouter = createTRPCRouter({
           },
         });
       } catch (error) {
-        console.log(error);
+        console.error(error)
+        //console.log(error);
       }
     }),
   deleteOne: protectedProcedure
@@ -51,7 +53,8 @@ export const favoritesRouter = createTRPCRouter({
           },
         });
       } catch (error) {
-        console.log(error);
+        console.error(error)
+        //console.log(error);
       }
     }),
 });

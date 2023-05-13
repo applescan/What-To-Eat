@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import Steps from "./Steps";
 import { useRouter } from 'next/router';
+
+//local imports
+import Steps from "./Steps";
 import Button from "../Button";
 
 
@@ -42,11 +44,10 @@ const MultiStepForm: React.FC = () => {
             alert("Please fill in all fields before submitting the form.");
             return;
         }
+        //console.log(formValues);
 
-        console.log(formValues);
         //save users choice in local storage
         localStorage.setItem('formValues', JSON.stringify(formValues));
-
         try {
             await router.push('/recipes');
         } catch (error) {

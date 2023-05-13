@@ -11,7 +11,8 @@ export const groceryRouter = createTRPCRouter({
         },
       });
     } catch (error) {
-      console.log("error", error);
+      console.error(error)
+      //console.log("error", error);
     }
   }),
   postMessage: protectedProcedure
@@ -30,7 +31,8 @@ export const groceryRouter = createTRPCRouter({
           },
         });
       } catch (error) {
-        console.log(error);
+        console.error(error)
+        //console.log(error);
       }
     }),
   updateOne: protectedProcedure
@@ -49,7 +51,8 @@ export const groceryRouter = createTRPCRouter({
           data: { ...rest },
         });
       } catch (error) {
-        console.log(error);
+        console.error(error)
+        //console.log(error);
       }
     }),
   deleteAll: protectedProcedure
@@ -63,7 +66,8 @@ export const groceryRouter = createTRPCRouter({
           },
         });
       } catch (error) {
-        console.log(error);
+        console.error(error)
+        //console.log(error);
       }
     }),
 });

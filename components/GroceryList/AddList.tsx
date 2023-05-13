@@ -1,10 +1,13 @@
+import React from 'react'
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
+
+//local import
 import { api } from "../../src/utils/api";
 import GroceryEntries from "./GroceryEntries";
-import React from 'react'
-import Image from "next/image";
 import Plus from "../../public/plus.png"
+import STATUS from "~/pages/constants";
 
 
 const AddList: React.FC = () => {
@@ -15,27 +18,31 @@ const AddList: React.FC = () => {
 
     const postMessage = api.grocery.postMessage.useMutation({
         onMutate: async (newEntry) => {
-            await utils.grocery.getAll.cancel();
-            utils.grocery.getAll.setData(undefined, (prevEntries: any) => {
-                if (prevEntries) {
+            try {
+                await utils.grocery.getAll.cancel();
+                utils.grocery.getAll.setData(undefined, (prevEntries: any) => {
+                    if (prevEntries) {
+                        return [
+                            {
+                                userId: session?.user.id,
+                                title: newEntry.title,
+                            },
+                            ...prevEntries,
+                        ];
+                    }
                     return [
                         {
                             userId: session?.user.id,
                             title: newEntry.title,
                         },
-                        ...prevEntries,
                     ];
-                } else {
-                    return [
-                        {
-                            userId: session?.user.id,
-                            title: newEntry.title,
-                        },
-                    ];
-                }
-            });
+                });
+            } catch (error) {
+                console.error(error);
+            }
         }
     });
+
 
     const deleteAllEntries = api.grocery.deleteAll.useMutation({
         onMutate: async () => {
@@ -47,7 +54,7 @@ const AddList: React.FC = () => {
         },
     });
 
-    if (status !== "authenticated") return null;
+    if (status !== STATUS.AUTHENTICATE) return null;
 
     return (
         <section>
