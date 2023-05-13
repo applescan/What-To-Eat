@@ -11,7 +11,7 @@ import Snackbar from 'components/Snackbar';
 import { api } from "../../../src/utils/api";
 import Button from 'components/Button';
 import FavoriteButton from 'components/FavoriteButton';
-import STATUS from '../constants';
+import STATUS from '../../../constants';
 
 interface RecipeProps {
     id: number;

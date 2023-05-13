@@ -7,7 +7,7 @@ import Image from "next/image";
 import { api } from "../../src/utils/api";
 import GroceryEntries from "./GroceryEntries";
 import Plus from "../../public/plus.png"
-import STATUS from "~/pages/constants";
+import STATUS from "constants";
 
 
 const AddList: React.FC = () => {

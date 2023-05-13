@@ -6,7 +6,7 @@ import { signIn, useSession } from "next-auth/react";
 import { api } from "../../src/utils/api";
 import FavoriteButton from 'components/FavoriteButton';
 import LetCookButton from 'components/LetsCookButton';
-import STATUS from '~/pages/constants';
+import STATUS from 'constants';
 
 interface RecipeCardProps {
     id: number;
