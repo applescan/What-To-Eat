@@ -41,7 +41,6 @@ interface RecipeProps {
     }[];
 }
 
-
 const GroceryPage: React.FC = () => {
     const { data: session } = useSession();
     const utils = api.useContext();
@@ -67,7 +66,6 @@ const GroceryPage: React.FC = () => {
 
         fetchFavorites();
     }, []);
-
 
     useEffect(() => {
         const fetchRecipeDetails = async () => {
@@ -106,7 +104,16 @@ const GroceryPage: React.FC = () => {
         }
     }, [favoriteRecipes]);
 
-
+    const getAll = async () => {
+        try {
+            const response = await utils.favorites.getAll.fetch();
+            const favoritesIds = response?.map((favorite) => favorite.id);
+            setFavoriteRecipes(favoritesIds ?? []);
+        } catch (error) {
+            console.error(error);
+            setFavoriteRecipes([]);
+        }
+    };
 
     const handleFavoriteClick = async (id: number) => {
         if (favoriteRecipes.includes(id)) {
@@ -116,6 +123,7 @@ const GroceryPage: React.FC = () => {
             // Delete recipe from favorites in the database
             try {
                 await api.favorites.deleteOne.useMutation();
+                getAll(); // Update the list immediately
             } catch (error) {
                 //console.log("Error deleting favorite", error);
                 console.error(error)
@@ -127,13 +135,13 @@ const GroceryPage: React.FC = () => {
             // Save recipe as favorite in the database
             try {
                 await api.favorites.addFavorites.useMutation();
+                getAll(); // Update the list immediately
             } catch (error) {
                 console.error(error)
                 //console.log("Error adding favorite", error);
             }
         }
     };
-
 
     return (
         <>
@@ -236,7 +244,6 @@ const GroceryPage: React.FC = () => {
 
             )}
         </>
-
     );
 };
 

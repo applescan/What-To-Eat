@@ -12,7 +12,6 @@ export const groceryRouter = createTRPCRouter({
       });
     } catch (error) {
       console.error(error)
-      //console.log("error", error);
     }
   }),
   postMessage: protectedProcedure
@@ -32,7 +31,6 @@ export const groceryRouter = createTRPCRouter({
         });
       } catch (error) {
         console.error(error)
-        //console.log(error);
       }
     }),
   updateOne: protectedProcedure
@@ -47,12 +45,32 @@ export const groceryRouter = createTRPCRouter({
       try {
         const { id, ...rest } = input;
         return await ctx.prisma.groceryList.update({
-          where: {id},
+          where: { id },
           data: { ...rest },
         });
       } catch (error) {
         console.error(error)
-        //console.log(error);
+      }
+    }),
+  deleteOne: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { userId } = ctx.session.user;
+      try {
+        // Find the item first to make sure it belongs to the current user
+        const item = await ctx.prisma.groceryList.findUnique({
+          where: { id: input.id },
+        });
+
+        if (!item || item.userId !== userId) {
+          throw new Error("Item not found or you don't have permission to delete this item");
+        }
+
+        return await ctx.prisma.groceryList.delete({
+          where: { id: input.id },
+        });
+      } catch (error) {
+        console.error(error);
       }
     }),
   deleteAll: protectedProcedure
@@ -67,7 +85,6 @@ export const groceryRouter = createTRPCRouter({
         });
       } catch (error) {
         console.error(error)
-        //console.log(error);
       }
     }),
 });

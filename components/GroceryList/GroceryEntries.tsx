@@ -3,6 +3,9 @@ import React, { useEffect, useState } from 'react';
 //local imports
 import { api } from '../../src/utils/api';
 import Loading from 'components/Loading';
+import { FaCheck, } from 'react-icons/fa';
+import { HiPencil } from 'react-icons/hi';
+import { MdClose } from 'react-icons/md';
 
 interface GroceryEntry {
   id: string;
@@ -14,57 +17,109 @@ const GroceryEntries: React.FC = () => {
     const storedIds = localStorage.getItem('selectedIds');
     return storedIds ? JSON.parse(storedIds) : [];
   });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitles, setEditTitles] = useState<{ [key: string]: string }>({});
 
-  const { data: groceryEntries, isLoading } = api.grocery.getAll.useQuery();
+  const { data: groceryEntries, refetch } = api.grocery.getAll.useQuery();
+  const updateMutation = api.grocery.updateOne.useMutation({
+    onSuccess: () => refetch(),
+  });
+  const deleteMutation = api.grocery.deleteOne.useMutation({
+    onSuccess: () => refetch(),
+  });
 
-  const updateOne = (entry: GroceryEntry) => {
-    setSelectedIds((prevSelected) => {
-      if (selectedIds.includes(entry.id)) {
-        return prevSelected.filter((id) => id !== entry.id);
-      }
-      return [...prevSelected, entry.id];
-    });
+  const startEditing = (entry: GroceryEntry) => {
+    setEditingId(entry.id);
+    setEditTitles((prevEditTitles) => ({
+      ...prevEditTitles,
+      [entry.id]: entry.title,
+    }));
   };
 
+  const updateOne = async (id: string, title: string) => {
+    try {
+      await updateMutation.mutate({ id, title });
+      setEditingId(null);
+    } catch (error) {
+      console.error("Failed to update entry: ", error);
+    }
+  };
+
+  const deleteOne = async (id: string) => {
+    try {
+      await deleteMutation.mutate({ id });
+    } catch (error) {
+      console.error("Failed to delete entry: ", error);
+    }
+  };
+
+  const toggleSelected = (id: string) => {
+    setSelectedIds((prevSelected) => {
+      if (prevSelected.includes(id)) {
+        return prevSelected.filter((selectedId) => selectedId !== id);
+      } else {
+        return [...prevSelected, id];
+      }
+    });
+  };
 
   useEffect(() => {
     localStorage.setItem('selectedIds', JSON.stringify(selectedIds));
   }, [selectedIds]);
 
-  if (isLoading) return <div className="mx-auto flex items-center">
+  if (!groceryEntries) return <div className="mx-auto flex items-center">
     <Loading></Loading>
   </div>;
 
-  const groceryColumns = groceryEntries?.reduce((columns: any, entry: GroceryEntry, index: number) => {
-    const columnIdx = Math.floor(index / 5);
-    if (!columns[columnIdx]) {
-      columns[columnIdx] = [];
-    }
-    columns[columnIdx].push(
-      <div key={index} className="flex items-center">
-        <label>
-          <input
-            type="checkbox"
-            onChange={() => updateOne(entry)}
-            className="mr-2"
-            checked={selectedIds.includes(entry.id)}
-          />
-          <span className="font-semibold text-m">{entry.title}</span>
-        </label>
-      </div>
-    );
-    return columns;
-  }, []);
-
   return (
     <div className="flex flex-col gap-4">
-      {groceryEntries?.length === 0 ? (
-        <p className="font-semibold text-m">No entries found.</p>
+      {groceryEntries.length === 0 ? (
+        <p className="font-semibold text-m mx-auto flex items-center">No entries found.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {groceryColumns?.map((column: any, index: number) => (
-            <div key={index}>
-              {column}
+          {groceryEntries.map((entry, index) => (
+            <div key={index} className="flex justify-between items-center space-x-4">
+              <label className="flex items-center space-x-4">
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(entry.id)}
+                  onChange={() => toggleSelected(entry.id)}
+                />
+                {editingId === entry.id ? (
+                  <input
+                    type="text"
+                    value={editTitles[entry.id] || ""}
+                    onChange={(e) =>
+                      setEditTitles((prevEditTitles) => ({
+                        ...prevEditTitles,
+                        [entry.id]: e.target.value,
+                      }))
+                    }
+                  />
+                ) : (
+                  <span
+                    className={`font-semibold text-m ${
+                      selectedIds.includes(entry.id) ? "line-through" : ""
+                    }`}
+                  >
+                    {entry.title}
+                  </span>
+                )}
+              </label>
+              <div className="flex text-indigo-500">
+                {editingId === entry.id ? (
+                  <button onClick={() => updateOne(entry.id, editTitles[entry.id] || "")}>
+                    <FaCheck />
+                  </button>
+                ) : (
+                  <button onClick={() => startEditing(entry)}>
+                    <HiPencil />
+                  </button>
+                )}
+                <button onClick={() => deleteOne(entry.id)}>
+                  <MdClose />
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -73,4 +128,4 @@ const GroceryEntries: React.FC = () => {
   );
 }
 
-export default GroceryEntries
+export default GroceryEntries;
