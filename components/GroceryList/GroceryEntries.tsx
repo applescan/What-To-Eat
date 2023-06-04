@@ -3,9 +3,8 @@ import React, { useEffect, useState } from 'react';
 //local imports
 import { api } from '../../src/utils/api';
 import Loading from 'components/Loading';
-import { FaCheck, } from 'react-icons/fa';
 import { HiPencil } from 'react-icons/hi';
-import { MdClose } from 'react-icons/md';
+import { MdClose, MdCheck } from 'react-icons/md';
 
 interface GroceryEntry {
   id: string;
@@ -78,7 +77,7 @@ const GroceryEntries: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {groceryEntries.map((entry, index) => (
-            <div key={index} className="flex justify-between items-center space-x-4">
+            <div key={index} className="sm:flex sm:flex-col sm:items-start md:flex-row md:justify-between md:items-center space-x-4 whitespace-wrap">
               <label className="flex items-center space-x-4">
                 <input
                   type="checkbox"
@@ -98,26 +97,24 @@ const GroceryEntries: React.FC = () => {
                   />
                 ) : (
                   <span
-                    className={`font-semibold text-m ${
-                      selectedIds.includes(entry.id) ? "line-through" : ""
-                    }`}
+                    className={`font-semibold text-m ${selectedIds.includes(entry.id) ? "line-through" : ""}`}
                   >
                     {entry.title}
                   </span>
                 )}
               </label>
-              <div className="flex text-indigo-500">
+              <div className="flex text-indigo-500 space-x-3 sm:space-x-2 sm:mt-2 justify-end">
                 {editingId === entry.id ? (
                   <button onClick={() => updateOne(entry.id, editTitles[entry.id] || "")}>
-                    <FaCheck />
+                    <MdCheck className="sm:text-xl" />
                   </button>
                 ) : (
                   <button onClick={() => startEditing(entry)}>
-                    <HiPencil />
+                    <HiPencil className="sm:text-xl" />
                   </button>
                 )}
                 <button onClick={() => deleteOne(entry.id)}>
-                  <MdClose />
+                  <MdClose className="sm:text-xl" />
                 </button>
               </div>
             </div>
