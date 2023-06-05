@@ -40,19 +40,26 @@ const AddList: React.FC = () => {
             } catch (error) {
                 console.error(error);
             }
+        },
+        onSuccess: () => {
+            utils.grocery.getAll.refetch();
         }
     });
-
-
+    
+    
     const deleteAllEntries = api.grocery.deleteAll.useMutation({
         onMutate: async () => {
             await utils.grocery.getAll.cancel();
             utils.grocery.getAll.setData(undefined, (prevEntries) => []);
         },
-        onSettled: async () => {
-            await utils.grocery.getAll.invalidate();
+        onSuccess: () => {
+            utils.grocery.getAll.refetch();
         },
+        onError: () => {
+            // Handle error here
+        }
     });
+    
 
     if (status !== STATUS.AUTHENTICATE) return null;
 
