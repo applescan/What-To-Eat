@@ -32,63 +32,67 @@ const Recipes: React.FC = () => {
         ingredients: "",
         pantry: ""
     });
-
+    const [isLoading, setIsLoading] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false)
     const [error, setError] = useState("")
     const [favoriteRecipes, setFavoriteRecipes] = useState<number[]>([]);
     const utils = api.useContext();
     const { data: session } = useSession();
 
-
     useEffect(() => {
-        // Retrieve form data from local storage
-        let formValues: FormData | any = null;
+        // Initialize formValues to null
+        let formValues: FormData | null = null;
 
         if (typeof window !== 'undefined') {
             const formDataString = localStorage.getItem('formValues');
             if (formDataString) {
                 formValues = JSON.parse(formDataString);
-            } else {
-                setSnackbarOpen(true);
-                setError("Please select your ingredients and dietary requirements!");
             }
         }
+        if (formValues) {
+            // Proceed only if formValues is not null
+            const dietaryText = formValues.dietary === "" ? "No dietary requirement" : formValues.dietary;
+            setDiet({ ...formValues, dietary: dietaryText });
+            // Make API call to Spoonacular
+            const fetchRecipes = async () => {
+                setIsLoading(true);
+                try {
+                    const res = await Axios.get(
+                        `https://api.spoonacular.com/recipes/complexSearch?query=${formValues?.ingredients}&diet=${formValues?.dietary}&ignorePantry=${formValues?.pantry}&apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&number=9`
+                    );
 
-        // Update dietary requirement text
-        const dietaryText = formValues.dietary == " " ? "No dietary requirement" : formValues.dietary;
-        setDiet({ ...formValues, dietary: dietaryText });
+                    // Extract recipe data from response
+                    const recipes = res.data.results.map((recipe: any) => ({
+                        id: recipe.id,
+                        title: recipe.title,
+                        img: recipe.image,
+                        href: `/${recipe.id}`
+                    }));
 
-        // Make API call to Spoonacular
-        const fetchRecipes = async () => {
-            try {
-                const res = await Axios.get(
-                    `https://api.spoonacular.com/recipes/complexSearch?query=${formValues.ingredients}&diet=${formValues.dietary}&ignorePantry=${formValues.pantry}&apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&number=9`
-                );
+                    // Set recipe data in state
+                    setRecipes(recipes);
 
-                // Extract recipe data from response
-                const recipes = res.data.results.map((recipe: any) => ({
-                    id: recipe.id,
-                    title: recipe.title,
-                    img: recipe.image,
-                    href: `/${recipe.id}`
-                }));
-
-                // Set recipe data in state
-                setRecipes(recipes);
-
-                // Show Snackbar if no recipes found
-                if (recipes.length === 0) {
+                    // Show Snackbar if no recipes found
+                    if (recipes.length === 0) {
+                        setSnackbarOpen(true);
+                        setError("No recipes found. Maybe try a different ingredients? 💭")
+                    }
+                } catch (error) {
+                    // Handle error when fetching API
                     setSnackbarOpen(true);
-                    setError("No recipes found. Maybe try a different ingredients? 💭")
+                    setError("Daily quota has been reached, please come back tomorrow!")
+                } finally {
+                    setIsLoading(false);
                 }
-            } catch (error) {
-                // Handle error when fetching API
-                setSnackbarOpen(true);
-                setError("Daily quota has been reached, please come back tomorrow!")
-            }
-        };
-
-        fetchRecipes();
+            };
+            fetchRecipes();
+        } else {
+            // If formValues is null or does not exist, show an error and do not attempt to fetch recipes
+            setSnackbarOpen(true);
+            setError("Please select your ingredients and dietary requirements!");
+            // Set diet to an empty object or to a state that indicates no data is present
+            setDiet({ dietary: "", ingredients: "", pantry: "" });
+        }
     }, []);
 
 
@@ -168,8 +172,13 @@ const Recipes: React.FC = () => {
                     )}
                 </div>
 
-                {recipes.length > 0 ? (
-                    <div className="my-12 flex justify-center">
+                {isLoading ? (
+                    <div className="flex h-screen justify-center items-center">
+                        <Loading />
+                    </div>
+                ) : (
+                    recipes.length > 0 && (
+                        <div className="my-12 flex justify-center">
                         <ul className="grid gap-16 sm:grid-cols-2 lg:grid-cols-3">
                             {recipes.map((recipe) => (
                                 <RecipeCard
@@ -184,12 +193,8 @@ const Recipes: React.FC = () => {
                             ))}
                         </ul>
                     </div>
-                ) : (
-                    <div className="flex h-screen justify-center items-center">
-                        <Loading></Loading>
-                    </div>
+                    )
                 )}
-
             </div>
             <div className='pt-10 mx-auto flex items-center justify-center'>
                 <Link href={{ pathname: "/get-started" }} >
