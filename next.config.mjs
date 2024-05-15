@@ -6,9 +6,9 @@
 
 /** @type {import("next").NextConfig} */
 const config = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   images: {
-    domains: ['spoonacular.com'],
+    domains: ["img.spoonacular.com"],
   },
   /**
    * If you have the "experimental: { appDir: true }" setting enabled, then you
