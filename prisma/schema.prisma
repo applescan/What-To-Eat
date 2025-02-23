@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model Example {
@@ -53,14 +54,14 @@ model User {
 }
 
 model GroceryList {
-  id      String   @id @default(cuid())
-  title   String
-  user    User     @relation(fields: [userId], references: [id])
-  userId  String
+  id     String @id @default(cuid())
+  title  String
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model FavoriteRecipe {
-  id     Int @id 
+  id     Int    @id
   title  String
   user   User   @relation(fields: [userId], references: [id])
   userId String
