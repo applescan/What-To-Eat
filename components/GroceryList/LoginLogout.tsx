@@ -56,19 +56,6 @@ const LoginLogout: React.FC = () => {
               />
               Login with Discord
             </button>
-            <button
-              className="mx-auto mb-4 block rounded-md bg-red-500 px-6 py-3 font-bold text-white hover:bg-red-600"
-              onClick={() => signIn("google").catch(console.log)}
-            >
-              Login with Google
-            </button>
-
-            <button
-              className="mx-auto block rounded-md bg-blue-700 px-6 py-3 font-bold text-white hover:bg-blue-800"
-              onClick={() => signIn("facebook").catch(console.log)}
-            >
-              Login with Facebook
-            </button>
           </div>
         </div>
       </div>
