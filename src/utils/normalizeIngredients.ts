@@ -216,7 +216,7 @@ const levenshtein = (a: string, b: string) => {
         }
     }
 
-    return matrix[a.length][b.length];
+    return matrix[a.length]?.[b.length] ?? 0;
 };
 
 const maxAllowedDistance = (token: string) => {

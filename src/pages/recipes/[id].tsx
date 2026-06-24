@@ -49,27 +49,11 @@ interface RecipePageProps {
 
 
 export const getStaticPaths: GetStaticPaths = async () => {
-    try {
-        // Fetch recipe IDs
-        const res = await Axios.get(
-            `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY}&number=9`
-        );
-
-        const recipeIds = res.data.results.map((recipe: any) => recipe.id);
-
-        // Generate paths for each recipe ID
-        const paths = recipeIds.map((id: number) => ({ params: { id: id.toString() } }));
-
-        return {
-            paths,
-            fallback: true,
-        };
-    } catch (error) {
-        //console.log("Error fetching static paths:", error);
-        console.error(error)
-        throw new Error("Failed to fetch static paths");
-    }
-}
+    return {
+        paths: [],
+        fallback: "blocking",
+    };
+};
 
 export const getStaticProps: GetStaticProps<RecipePageProps, { id: string }> = async ({ params }) => {
     try {
