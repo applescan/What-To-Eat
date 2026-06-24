@@ -7,10 +7,11 @@ interface AddToGroceryButtonProps {
 const AddToGroceryButton: FC<AddToGroceryButtonProps> = ({ handleGroceryClick }) => {
     return (
         <button
-            className="flex items-center justify-center py-2 px-4 text-white font-medium bg-gradient-to-r from-[#14b8a6] to-[#a3e635] hover:bg-teal-400 rounded-lg md:inline-flex"
+            className="block w-full rounded-full border border-emerald-200 bg-emerald-50 px-6 py-3 text-center text-sm font-semibold text-emerald-700 transition hover:border-emerald-300 hover:bg-emerald-100"
             onClick={handleGroceryClick}
+            type="button"
         >
-            Add to grocery list 🛍️
+            Add to grocery list
         </button>
     );
 };

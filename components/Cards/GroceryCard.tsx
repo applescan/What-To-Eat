@@ -21,13 +21,17 @@ interface RecipeCardProps {
     unit: string;
   }[];
   isFavorited: boolean;
-  onFavoriteClick: Function;
+  onFavoriteClick: (id: number) => void;
 }
 
 const GroceryCard: React.FC<RecipeCardProps> = ({ id, img, title, href, isFavorited, extendedIngredients, onFavoriteClick }) => {
   const [isFavoritedState, setIsFavoritedState] = useState(isFavorited);
   const { data: session, status } = useSession();
   const utils = api.useContext();
+
+  useEffect(() => {
+    setIsFavoritedState(isFavorited);
+  }, [isFavorited]);
 
   const handleFavoriteClick = async () => {
     onFavoriteClick(id);
@@ -135,62 +139,62 @@ const GroceryCard: React.FC<RecipeCardProps> = ({ id, img, title, href, isFavori
   }, [postMessage.isSuccess, utils.grocery.getAll]);
 
   return (
-    <div className="max-w-m rounded-md shadow-md bg-indigo-50 ">
-      <div className="flex justify-center rounded-xl">
+    <div className="flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_30px_60px_-42px_rgba(15,23,42,0.55)]">
+      <div className="relative">
         <Image
           src={img}
           height={800}
           width={800}
           loading="lazy"
           alt={title}
-          className="object-cover object-center w-ful h-56 border-8 border-indigo-50"
+          className="h-60 w-full object-cover object-center"
         />
+        <div className="absolute right-4 top-4 rounded-full bg-white/95 p-2 shadow-lg">
+          <FavoriteButton
+            isFavorited={isFavoritedState}
+            handleFavoriteClick={handleFavoriteClick}
+          />
+        </div>
       </div>
-      <div className="flex flex-col justify-between p-6 space-y-8">
-        <div className="flex justify-between items-center">
-          <div className="space-y-2">
-            <span className="block text-sm pb-2 font-medium tracking-widest uppercase text-indigo-400">
-              Recipe
+      <div className="flex min-h-[320px] flex-1 flex-col p-6">
+        <div className="flex-1 space-y-6">
+          <div className="flex flex-wrap gap-2">
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">
+              Saved recipe
             </span>
-            <div className="flex justify-between">
-              <h2 className="text-xl font-semibold tracking-wide pr-6 flex-1">
-                {title}
-              </h2>
-              <div className="flex items-center">
-                <FavoriteButton
-                  isFavorited={isFavorited}
-                  handleFavoriteClick={handleFavoriteClick}
-                />
-              </div>
-            </div>
+            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600">
+              {extendedIngredients.length} ingredients
+            </span>
+          </div>
 
-            <br></br>
-            <div>
-              <span className="block text-sm pb-2 font-medium tracking-widest uppercase text-indigo-400">
-                Ingredients
-              </span>
+          <h2 className="break-words text-2xl font-black tracking-tight text-slate-900">
+            {title}
+          </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {extendedIngredients.map((ingredient: any, idx) => (
-                  <div key={idx}>
-                    <span className="text-small font-semibold">{ingredient.name}:</span>
-                    <span className="text-base font-bold"> {ingredient.amount} {ingredient.unit}</span>
-                  </div>
-                )).reduce((rows: any, element: any, idx: number) => {
-                  return (idx % 5 === 0) ? [...rows, [element]] : [...rows.slice(0, -1), [...rows.slice(-1)[0], element]];
-                }, []).map((row: any, idx: number) => (
-                  <ul key={idx}>
-                    {row.map((element: any, idx: number) => (
-                      <li key={idx}>{element}</li>
-                    ))}
-                  </ul>
-                ))}
-              </div>
-            </div>
+          <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+              Ingredients
+            </p>
+            <ul className="mt-4 space-y-2 text-sm text-slate-700">
+              {extendedIngredients.map((ingredient, idx) => (
+                <li
+                  key={`${ingredient.name}-${idx}`}
+                  className="flex flex-wrap gap-x-2 gap-y-1 border-b border-slate-200/80 pb-2 last:border-b-0 last:pb-0"
+                >
+                  <span className="font-semibold text-slate-900">{ingredient.name}</span>
+                  <span>
+                    {ingredient.amount} {ingredient.unit}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-        <AddToGroceryButton handleGroceryClick={handleGroceryClick} />
-        <LetCookButton href={href} />
+
+        <div className="mt-6 flex flex-col gap-3">
+          <AddToGroceryButton handleGroceryClick={handleGroceryClick} />
+          <LetCookButton href={href} />
+        </div>
       </div>
     </div >
   );

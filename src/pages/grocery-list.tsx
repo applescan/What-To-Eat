@@ -100,7 +100,7 @@ const GroceryPage: React.FC = () => {
         const recipeDetails = recipeDetailsResponses.filter(
           (response) => response !== null
         );
-        setFavoriteRecipesDetails(recipeDetails as RecipeProps[]);
+        setFavoriteRecipesDetails(recipeDetails);
       } catch (error) {
         console.error(error);
         //console.log("Error fetching recipe details:", error);
@@ -156,9 +156,9 @@ const GroceryPage: React.FC = () => {
 
   return (
     <>
-      {error ? (
+      { error ? (
         <div className="app-page min-h-[60vh]">
-          {snackbarOpen && <Snackbar message={error} link="/" />}
+          { snackbarOpen && <Snackbar message={ error } link="/" /> }
         </div>
       ) : session ? (
         <div className="app-page">
@@ -166,9 +166,9 @@ const GroceryPage: React.FC = () => {
             <div className="mx-auto max-w-screen-2xl px-4 text-gray-600 md:px-8">
               <div className="relative mx-auto max-w-5xl space-y-5 text-center sm:text-center">
                 <h2 className="mx-auto pb-6 text-4xl font-extrabold text-slate-900 md:text-5xl">
-                  Welcome to your grocery list,{" "}
+                  Welcome to your grocery list,{ " " }
                   <span className="text-emerald-600">
-                    {session.user?.name}
+                    { session.user?.name }
                   </span>
                 </h2>
               </div>
@@ -182,7 +182,7 @@ const GroceryPage: React.FC = () => {
               <br></br>
 
               <p className="mx-auto py-12 text-center text-xl font-semibold text-slate-700">
-                or add groceries from{" "}
+                or add groceries from{ " " }
                 <span className="text-emerald-600">
                   your favorites recipes!
                 </span>
@@ -190,20 +190,20 @@ const GroceryPage: React.FC = () => {
 
               <br></br>
 
-              {favoriteRecipesDetails.length > 0 ? (
-                <ul className="grid gap-16 sm:grid-cols-2 lg:grid-cols-3">
-                  {favoriteRecipesDetails.map((recipe) => (
+              { favoriteRecipesDetails.length > 0 ? (
+                <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                  { favoriteRecipesDetails.map((recipe) => (
                     <GroceryCard
-                      key={recipe.id}
-                      id={recipe.id}
-                      title={recipe.title}
-                      img={recipe.image}
-                      href={`/${recipe.id}`}
-                      extendedIngredients={recipe.extendedIngredients}
-                      isFavorited={favoriteRecipes.includes(recipe.id)}
-                      onFavoriteClick={handleFavoriteClick}
+                      key={ recipe.id }
+                      id={ recipe.id }
+                      title={ recipe.title }
+                      img={ recipe.image }
+                      href={ `/${recipe.id}` }
+                      extendedIngredients={ recipe.extendedIngredients }
+                      isFavorited={ favoriteRecipes.includes(recipe.id) }
+                      onFavoriteClick={ handleFavoriteClick }
                     />
-                  ))}
+                  )) }
                 </ul>
               ) : favoriteRecipesDetails.length === 0 ? (
                 <p className="py-6 text-center text-slate-600">
@@ -214,7 +214,7 @@ const GroceryPage: React.FC = () => {
                 <div className="mx-auto flex items-center">
                   <Loading />
                 </div>
-              )}
+              ) }
             </div>
           </div>
         </div>
@@ -224,7 +224,7 @@ const GroceryPage: React.FC = () => {
             <div className="mx-auto max-w-screen-xl px-4  text-gray-600 md:px-8">
               <div className="relative mx-auto max-w-2xl space-y-5 text-center sm:text-center">
                 <h2 className="mx-auto pb-6 text-4xl font-extrabold text-slate-900 md:text-5xl">
-                  Create a grocery list from{" "}
+                  Create a grocery list from{ " " }
                   <span className="text-emerald-600">
                     your favorite recipe
                   </span>
@@ -236,15 +236,15 @@ const GroceryPage: React.FC = () => {
               <button
                 type="button"
                 className="mx-auto block items-center rounded-lg bg-slate-900 px-6 py-3 text-center font-bold text-white transition hover:bg-slate-800"
-                onClick={() => {
+                onClick={ () => {
                   signIn("discord").catch(console.log);
-                }}
+                } }
               >
                 <Image
                   className="w-32 sm:mx-auto"
-                  src={Discord}
-                  width={150}
-                  height={50}
+                  src={ Discord }
+                  width={ 150 }
+                  height={ 50 }
                   alt="What to eat logo"
                 />
                 Login with Discord
@@ -252,7 +252,7 @@ const GroceryPage: React.FC = () => {
             </div>
           </div>
         </div>
-      )}
+      ) }
     </>
   );
 };

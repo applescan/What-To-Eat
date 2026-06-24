@@ -88,7 +88,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   ].filter(Boolean);
 
   return (
-    <div className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_30px_60px_-42px_rgba(15,23,42,0.55)]">
+    <div className="flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_30px_60px_-42px_rgba(15,23,42,0.55)]">
       <div className="relative">
         <Image
           src={img}
@@ -106,8 +106,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         </div>
       </div>
 
-      <div className="flex h-[240px] flex-col justify-between p-6">
-        <div>
+      <div className="flex min-h-[240px] flex-1 flex-col p-6">
+        <div className="flex-1">
           <div className="flex flex-wrap gap-2">
             {badges.map((badge) => (
               <span
@@ -118,10 +118,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
               </span>
             ))}
           </div>
-          <h2 className="mt-4 text-2xl font-black tracking-tight text-slate-900">{title}</h2>
+          <h2 className="mt-4 break-words text-2xl font-black tracking-tight text-slate-900">
+            {title}
+          </h2>
         </div>
 
-        <LetCookButton href={href} />
+        <div className="mt-6">
+          <LetCookButton href={href} />
+        </div>
       </div>
     </div>
   );
