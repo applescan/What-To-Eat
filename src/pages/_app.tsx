@@ -14,10 +14,14 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <Header></Header>
-      <title>What to Eat - A Recipe Recommendation Engine</title>
-      <Component {...pageProps} />
-      <Footer></Footer>
+      <div className="min-h-screen bg-slate-50 text-slate-900">
+        <Header></Header>
+        <title>What to Eat - A Recipe Recommendation Engine</title>
+        <main className="app-shell flex-1">
+          <Component {...pageProps} />
+        </main>
+        <Footer></Footer>
+      </div>
     </SessionProvider>
   );
 };

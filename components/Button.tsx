@@ -1,28 +1,26 @@
-import React, { MouseEventHandler } from 'react';
+import React, { MouseEventHandler } from "react";
 
 interface ButtonProps {
-    name: string;
-    onClick?: MouseEventHandler<HTMLButtonElement>;
-    isTeal?: boolean; // Add a new prop for specifying whether the button should be teal or not
-    type?: 'button' | 'submit' | 'reset' | undefined;
+  name: string;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
+  isTeal?: boolean;
+  type?: "button" | "submit" | "reset";
 }
 
-const Button: React.FC<ButtonProps> = ({ name, onClick, isTeal, type }) => {
-    const bgColorClass = isTeal ? "bg-teal-500" : "bg-indigo-600";
-    const hoverBgColorClass = isTeal ? "hover:bg-teal-400" : "hover:bg-indigo-400";
+const Button: React.FC<ButtonProps> = ({ name, onClick, isTeal, type = "button" }) => {
+  const toneClassName = isTeal
+    ? "bg-emerald-600 hover:bg-emerald-500"
+    : "bg-slate-900 hover:bg-slate-800";
 
-    return (
-        <button
-            className={`px-8 py-2 text-white rounded-lg duration-150 active:shadow-lg ${bgColorClass} ${hoverBgColorClass}`}
-            onClick={onClick}
-            role="button"
-            tabIndex={0}
-            type={type}
-        >
-            {name}
-        </button>
-    );
+  return (
+    <button
+      className={`inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition ${toneClassName}`}
+      onClick={onClick}
+      type={type}
+    >
+      {name}
+    </button>
+  );
 };
 
 export default Button;
-

@@ -1,12 +1,11 @@
-import MultiStepForm from "components/Form/MultiStepForm"
+import MultiStepForm from "components/Form/MultiStepForm";
 
 const GetStarted: React.FC = () => {
-
   return (
-    <div className="min-h-full bg-[url('../../public/background-2.gif')] px-10 md:px-4 bg-cover">
-      <MultiStepForm></MultiStepForm>
+    <div className="py-4">
+      <MultiStepForm />
     </div>
-  )
-}
+  );
+};
 
-export default GetStarted
+export default GetStarted;

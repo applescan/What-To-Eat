@@ -2,13 +2,12 @@ import HeroBanner from "components/Home/HeroBanner";
 import Diets from "components/Home/Diets";
 
 const Index: React.FC = () => {
-
   return (
-    <>
-      <HeroBanner></HeroBanner>
-      <Diets></Diets>
-    </>
-  )
-}
+    <div className="space-y-6 pb-12">
+      <HeroBanner />
+      <Diets />
+    </div>
+  );
+};
 
-export default Index
+export default Index;

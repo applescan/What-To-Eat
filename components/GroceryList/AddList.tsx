@@ -65,13 +65,13 @@ const AddList: React.FC = () => {
 
     return (
         <section>
-            <div className='mt-2 justify-center gap-6 bg-indigo-50 rounded-md '>
+            <div className='mt-2 justify-center gap-6 rounded-xl border border-slate-200 bg-slate-50'>
 
-                <div className="p-8 space-y-4 border-b">
-                    <span className='text-indigo-600 font-bold text-xl'>
+                <div className="space-y-4 border-b border-slate-200 p-8">
+                    <span className='text-xl font-bold text-slate-900'>
                         Grocery List
                     </span>
-                    <div className='text-gray-800 text-lg font-semibold'>
+                    <div className='text-lg font-semibold text-slate-800'>
                         <form
                             className="flex mx-auto justify-between gap-2"
                             onSubmit={(event) => {
@@ -84,7 +84,7 @@ const AddList: React.FC = () => {
                         >
                             <input
                                 type="text"
-                                className="text-base bg-teal-50 border-2 border-indigo-200 text-gray-700 rounded-lg focus:ring-teal-500 focus:border-teal-500 p-2 w-5/6"
+                                className="w-5/6 rounded-lg border border-slate-300 bg-white p-2 text-base text-slate-700 outline-none transition focus:border-slate-400"
                                 placeholder="Your list to add..."
                                 minLength={2}
                                 maxLength={100}
@@ -102,7 +102,7 @@ const AddList: React.FC = () => {
                             </button>
                         </form>
                     </div>
-                    <button className='px-3 py-3 rounded-lg w-full font-semibold text-sm duration-150 text-gray-500 flex justify-end underline'
+                    <button className='flex w-full justify-end rounded-lg px-3 py-3 text-sm font-semibold text-slate-500 underline duration-150'
                         onClick={() => {
                             if (confirm("Are you sure you want to delete all entries?")) {
                                 deleteAllEntries.mutate(
@@ -118,7 +118,7 @@ const AddList: React.FC = () => {
                         Delete All Entries
                     </button>
                 </div>
-                <div className="p-8 space-y-4 border-b">
+                <div className="space-y-4 border-b border-slate-200 p-8">
                     <GroceryEntries></GroceryEntries>
                 </div>
             </div>

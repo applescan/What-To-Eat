@@ -1,6 +1,8 @@
 const INGREDIENT_DICTIONARY = [
     "apple",
     "apricot",
+    "arugula",
+    "asparagus",
     "avocado",
     "bacon",
     "bagel",
@@ -10,10 +12,13 @@ const INGREDIENT_DICTIONARY = [
     "beef",
     "bell pepper",
     "black beans",
+    "bok choy",
     "blueberry",
     "bread",
     "broccoli",
     "brown rice",
+    "brussels sprouts",
+    "buffalo sauce",
     "butter",
     "cabbage",
     "carrot",
@@ -27,78 +32,128 @@ const INGREDIENT_DICTIONARY = [
     "chili",
     "chives",
     "cilantro",
+    "cinnamon",
     "coconut milk",
     "corn",
     "cottage cheese",
     "cucumber",
     "cumin",
     "cream",
+    "curry paste",
+    "curry powder",
+    "dates",
+    "egg noodles",
     "egg",
     "eggplant",
+    "farro",
     "feta",
+    "fish sauce",
     "flour",
+    "frozen peas",
     "garlic",
+    "garam masala",
     "ginger",
     "goat cheese",
+    "granola",
     "green beans",
+    "green onion",
     "ground beef",
+    "ground chicken",
+    "ground pork",
+    "halloumi",
     "ham",
+    "heavy cream",
     "honey",
+    "hot sauce",
     "jalapeno",
     "kale",
+    "kimchi",
     "ketchup",
+    "kidney beans",
+    "lamb",
+    "leek",
     "lemon",
     "lettuce",
+    "lentils",
     "lime",
     "milk",
+    "mint",
     "mozzarella",
     "mushroom",
     "mustard",
+    "naan",
+    "navy beans",
     "noodles",
     "oats",
     "oil",
     "olive oil",
+    "olives",
     "onion",
     "orange",
     "oregano",
+    "panko",
     "paprika",
     "parmesan",
     "parsley",
     "pasta",
+    "peas",
     "pea",
     "peanut butter",
+    "peanuts",
     "pear",
     "pepper",
     "pepperoni",
     "pesto",
     "pineapple",
+    "pita",
+    "plain yogurt",
+    "prawns",
     "pork",
     "potato",
     "prosciutto",
+    "pumpkin",
+    "red onion",
     "quinoa",
     "radish",
     "rice",
+    "rice noodles",
+    "ricotta",
     "rosemary",
+    "sour cream",
     "salmon",
     "salsa",
     "salt",
     "sausage",
     "scallion",
+    "sesame oil",
     "shrimp",
+    "soy sauce",
     "spinach",
     "steak",
     "strawberry",
     "sugar",
+    "sun-dried tomato",
+    "sweet chili sauce",
     "sweet potato",
+    "tahini",
+    "tempeh",
     "thyme",
     "tofu",
     "tomato",
+    "tomato paste",
+    "tomato sauce",
     "tortilla",
+    "turmeric",
     "tuna",
     "turkey",
     "vanilla",
+    "white beans",
+    "whole wheat pasta",
     "vinegar",
     "walnut",
+    "white rice",
+    "wrap",
+    "yams",
     "yogurt",
     "zucchini"
 ];
@@ -109,11 +164,11 @@ const STOP_WORDS = new Set(["fresh", "chopped", "diced", "minced", "sliced", "gr
 
 const QUANTITY_PREFIX = /^(\d+(\.\d+)?\s*)?(cups?|cup|tbsp|tablespoons?|tsp|teaspoons?|pounds?|lbs?|lb|oz|ounces?|grams?|g|kg|cloves?|clove|cans?|can|pieces?|piece|slices?|slice|packets?|packet|bunches?|bunch|heads?|head)?\s*(of\s+)?/;
 
-const splitOnSeparators = (input: string) =>
+const splitOnSeparators = (input: string): string[] =>
     input
-        .split(/,|\band\b|\bwith\b|\bplus\b|\bthen\b|\balso\b/gi)
+        .split(/,|\/|;|\n|\band\b|\bwith\b|\bplus\b|\bthen\b|\balso\b/gi)
         .map((token) => token.trim())
-        .filter(Boolean);
+        .filter((token): token is string => Boolean(token));
 
 const stripQuantityAndStopWords = (input: string) => {
     const withoutQuantity = input.replace(QUANTITY_PREFIX, "").trim();
@@ -130,18 +185,34 @@ const singularize = (word: string) => {
 };
 
 const levenshtein = (a: string, b: string) => {
-    const matrix = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0));
-    for (let i = 0; i <= a.length; i += 1) matrix[i][0] = i;
-    for (let j = 0; j <= b.length; j += 1) matrix[0][j] = j;
+    const matrix: number[][] = Array.from(
+        { length: a.length + 1 },
+        () => new Array<number>(b.length + 1).fill(0)
+    );
+    for (let i = 0; i <= a.length; i += 1) {
+        const row = matrix[i];
+        if (row) {
+            row[0] = i;
+        }
+    }
+
+    const firstRow = matrix[0];
+    if (firstRow) {
+        for (let j = 0; j <= b.length; j += 1) {
+            firstRow[j] = j;
+        }
+    }
 
     for (let i = 1; i <= a.length; i += 1) {
         for (let j = 1; j <= b.length; j += 1) {
             const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-            matrix[i][j] = Math.min(
-                matrix[i - 1][j] + 1,
-                matrix[i][j - 1] + 1,
-                matrix[i - 1][j - 1] + cost
-            );
+            const removeCost = (matrix[i - 1]?.[j] ?? 0) + 1;
+            const insertCost = (matrix[i]?.[j - 1] ?? 0) + 1;
+            const replaceCost = (matrix[i - 1]?.[j - 1] ?? 0) + cost;
+            const currentRow = matrix[i];
+            if (currentRow) {
+                currentRow[j] = Math.min(removeCost, insertCost, replaceCost);
+            }
         }
     }
 
@@ -198,7 +269,7 @@ export const normalizeIngredients = (input: string) => {
     const tokens = splitOnSeparators(cleaned);
     const normalized = tokens
         .map(normalizeToken)
-        .filter(Boolean);
+        .filter((token): token is string => Boolean(token));
 
     const unique = Array.from(new Set(normalized));
     return unique.join(", ");

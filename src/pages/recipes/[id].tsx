@@ -216,7 +216,7 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
 
     if (!recipe) {
         return (
-            <div className="flex h-screen justify-center items-center">
+            <div className="app-page flex min-h-[60vh] items-center justify-center">
                 <Loading></Loading>
             </div>
         );
@@ -225,19 +225,19 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
     return (
         <>
             {error ? (
-                <div className="px-40 py-40 h-screen justify-center items-center">
+                <div className="app-page min-h-[60vh]">
                     {snackbarOpen && (
                         <Snackbar message={error} link='/' />
                     )}
                 </div>
             ) : (
-                <div className="bg-[url('../../public/background-4.png')] bg-contain bg-no-repeat">
-                    <div className="max-w-2xl py-16 mx-auto space-y-12 px-10 md:px-8">
+                <div className="app-page">
+                    <div className="app-panel mx-auto max-w-4xl space-y-12 px-6 py-10 sm:px-10 sm:py-12">
                         <article className="space-y-8">
                             <div className="space-y-6">
 
-                                <div className="flex justify-around">
-                                    <h1 className=" text-4xl text-gray-700 font-extrabold mr-3 md:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#14b8a6]" >{recipe?.title}</h1>
+                                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                                    <h1 className="mr-3 text-4xl font-extrabold text-slate-900 md:text-5xl" >{recipe?.title}</h1>
                                     <div className="flex items-center">
                                         <FavoriteButton
                                             isFavorited={isFavoritedState}
@@ -266,10 +266,10 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                                 {recipe?.diets?.length > 0 && (
                                     <div className="py-6">
                                         <p className="text-base font-semibold">Diets:</p>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 mt-2">
+                                        <div className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-3">
                                             {recipe?.diets.map((diet: any, idx) => (
                                                 <div
-                                                    className="px-3 py-1 rounded-lg bg-indigo-400 text-white font-semibold text-base"
+                                                    className="rounded-lg bg-slate-900 px-3 py-1 text-base font-semibold text-white"
                                                     key={idx}
                                                 >
                                                     {diet}
@@ -284,10 +284,10 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                                 {recipe?.cuisines?.length > 0 && (
                                     <div className="py-6">
                                         <p className="text-base font-semibold">Cuisines:</p>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-2 mt-2">
+                                        <div className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-3">
                                             {recipe?.cuisines.map((cuisine: any, idx) => (
                                                 <div
-                                                    className="px-3 py-1 rounded-lg bg-teal-400 text-white font-semibold text-base"
+                                                    className="rounded-lg bg-emerald-600 px-3 py-1 text-base font-semibold text-white"
                                                     key={idx}
                                                 >
                                                     {cuisine}
@@ -298,7 +298,7 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                                 )}
                             </div>
 
-                            <div className="border-t border-dashed space-y-2 py-10">
+                            <div className="space-y-2 border-t border-slate-200 py-10">
                                 {recipe?.extendedIngredients && (
                                     <>
                                         <h4 className="text-lg font-semibold">Ingredients:</h4>
@@ -311,7 +311,7 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
                                 )}
                             </div>
 
-                            <div className="border-t border-dashed space-y-2 pt-10">
+                            <div className="space-y-2 border-t border-slate-200 pt-10">
                                 {recipe?.analyzedInstructions?.length > 0 && (
                                     <>
                                         <h4 className="text-lg font-semibold">Instructions:</h4>
@@ -326,12 +326,10 @@ const RecipePage = ({ recipe }: RecipePageProps) => {
 
                         </div>
                     </div>
-                    <div className='my-12 px-10'>
-                        <div className='pt-10 mx-auto flex items-center justify-center'>
+                    <div className='mx-auto mt-8 flex items-center justify-center'>
                             <Link href={{ pathname: "/recipes" }} >
                                 <Button name="Back" isTeal={true} />
                             </Link>
-                        </div>
                     </div>
                 </div>
             )} </>

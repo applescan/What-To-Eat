@@ -1,200 +1,295 @@
-import React, { useState } from "react";
-import { useRouter } from 'next/router';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
-//local imports
 import Steps from "./Steps";
-import Button from "../Button";
-import { normalizeIngredients } from "../../src/utils/normalizeIngredients";
+import {
+    DIETARY_OPTIONS,
+    RECIPE_QUESTIONNAIRE_STORAGE_KEY,
+    type PantrySupport,
+    createRecipeQuestionnaireProfile,
+} from "../../src/utils/recipeQuestionnaire";
 
+const STEPS = ["Dietary", "Ingredients", "Pantry"];
 
-type FormValues = {
+const INPUT_CLASSNAME =
+    "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-700 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100";
+
+const SELECT_CLASSNAME =
+    "w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 pr-12 text-base font-medium text-slate-800 outline-none transition focus:border-slate-400 focus:bg-white focus:ring-4 focus:ring-slate-100";
+
+const BUTTON_CLASSNAME =
+    "rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800";
+
+const SECONDARY_BUTTON_CLASSNAME =
+    "rounded-lg border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50";
+
+type QuestionnaireFormState = {
     dietary: string;
     ingredients: string;
-    pantry: boolean | null;
+    pantrySupport: PantrySupport | "";
 };
 
+const initialValues: QuestionnaireFormState = {
+    dietary: "",
+    ingredients: "",
+    pantrySupport: "",
+};
+
+const pantryOptions: Array<{
+    description: string;
+    title: string;
+    value: PantrySupport;
+}> = [
+        {
+            value: "ingredients-only",
+            title: "Only use what I have",
+            description: "Keep suggestions close to the ingredients I listed.",
+        },
+        {
+            value: "pantry-ok",
+            title: "Pantry staples are okay",
+            description: "Basic oils, spices, flour, and similar staples can help.",
+        },
+    ];
+
 const MultiStepForm: React.FC = () => {
-
-    const [formValues, setFormValues] = useState<FormValues>({
-        dietary: "",
-        ingredients: "",
-        pantry: null
-    });
-
-    //to change the form questions and stepper number
-    const [step, setStep] = useState<number>(1);
+    const [formValues, setFormValues] = useState<QuestionnaireFormState>(initialValues);
+    const [step, setStep] = useState(1);
+    const [validationMessage, setValidationMessage] = useState("");
     const router = useRouter();
 
+    useEffect(() => {
+        setValidationMessage("");
+    }, [step]);
 
-    // validate the form values
-    const validateForm = () => {
-        if (formValues.dietary === "" || formValues.ingredients === "" || formValues.pantry === null) {
-            return false;
-        }
-        return true;
-    };
+    const profile = createRecipeQuestionnaireProfile({
+        prompt: formValues.ingredients,
+        dietary: formValues.dietary || "any",
+        ingredients: formValues.ingredients,
+        avoidIngredients: "",
+        cuisine: "any",
+        mealType: "any",
+        maxReadyTime: "",
+        pantrySupport: formValues.pantrySupport || "pantry-ok",
+    });
 
-
-    //handling form submission
-    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
-        // validate the form values
-        const isValid = validateForm();
-        if (!isValid) {
-            alert("Please fill in all fields before submitting the form.");
-            return;
-        }
-        //console.log(formValues);
-
-        //save users choice in local storage
-        localStorage.setItem('formValues', JSON.stringify(formValues));
-        try {
-            await router.push('/recipes');
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-
-    const handleInputChange = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    const updateField = <Key extends keyof QuestionnaireFormState>(
+        name: Key,
+        value: QuestionnaireFormState[Key],
     ) => {
-        const { name, value } = event.target;
-        setFormValues({ ...formValues, [name]: value });
+        setValidationMessage("");
+        setFormValues((previous) => ({ ...previous, [name]: value }));
     };
 
-    const handleIngredientsBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-        const normalized = normalizeIngredients(event.target.value);
-        setFormValues((prev) => ({ ...prev, ingredients: normalized }));
-    };
+    const getStepValidationMessage = (currentStep: number) => {
+        if (currentStep === 1 && !formValues.dietary) {
+            return "Select a dietary option before continuing.";
+        }
 
-    const handleRadioChange = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        const { name, value } = event.target;
-        setFormValues({ ...formValues, [name]: value === "true" });
+        if (currentStep === 2 && !formValues.ingredients.trim()) {
+            return "Add ingredients or a short description of the meal you want.";
+        }
+
+        if (currentStep === 3 && !formValues.pantrySupport) {
+            return "Choose whether pantry staples are available.";
+        }
+
+        return "";
     };
 
     const handleNextClick = () => {
-        setStep(step + 1);
+        const nextValidationMessage = getStepValidationMessage(step);
+
+        if (nextValidationMessage) {
+            setValidationMessage(nextValidationMessage);
+            return;
+        }
+
+        setValidationMessage("");
+        setStep((previous) => Math.min(previous + 1, STEPS.length));
     };
 
     const handlePrevClick = () => {
-        setStep(step - 1);
+        setValidationMessage("");
+        setStep((previous) => Math.max(previous - 1, 1));
+    };
+
+    const handleFormSubmit = () => {
+        const submitValidationMessage = getStepValidationMessage(step);
+
+        if (submitValidationMessage) {
+            setValidationMessage(submitValidationMessage);
+            return;
+        }
+
+        setValidationMessage("");
+        localStorage.setItem(RECIPE_QUESTIONNAIRE_STORAGE_KEY, JSON.stringify(profile));
+        localStorage.setItem(
+            "formValues",
+            JSON.stringify({
+                dietary: profile.dietary === "any" ? "" : profile.dietary,
+                ingredients: profile.ingredients.join(", "),
+                pantry: profile.pantrySupport === "ingredients-only",
+            }),
+        );
+
+        void router.push("/recipes").catch((error) => {
+            console.error(error);
+            setValidationMessage("Something went wrong while opening your recipe results.");
+        });
     };
 
     return (
-        <div>
-            <Steps steps={ ["Step 1", "Step 2", "Step 3"] } currentStep={ step } />
+        <div className="mx-auto max-w-3xl px-4 py-10">
+            <Steps steps={ STEPS } currentStep={ step } />
 
-            <div className="max-w-screen-xl mx-auto gap-12 text-gray-600 px-1 pb-32 pt-10 md:px-1">
-
-                <div className="space-y-5 max-w-4xl mx-auto text-center">
-                    <h2 className="text-4xl text-gray-700 font-extrabold mx-auto md:text-5xl">
-                        Tell us a little bit about your  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#14b8a6]" >dietary preferences</span>
-                    </h2>
-
+            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+                        Find recipes from what you already have
+                    </h1>
+                    <p className="mt-3 text-base leading-7 text-slate-600">
+                        Choose your diet, describe what is in your kitchen,
+                        and decide whether pantry staples can be used.
+                    </p>
                 </div>
 
-                <form onSubmit={ handleFormSubmit } className="pt-28 pb-20">
-                    <div>
-                        { step === 1 && (
-                            <div className="hr-transition font-semibold text-xl mx-auto">
-                                <label>
+                <form className="space-y-8">
+                    { step === 1 ? (
+                        <div className="space-y-4">
+                            <div>
+                                <h2 className="text-xl font-semibold text-slate-900">
                                     What is your dietary requirement?
-                                    <br></br>
-                                    <br></br>
-                                    <select className="text-base bg-teal-50 border-2 border-indigo-200 text-gray-700 rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-5"
-                                        required
+                                </h2>
+                            </div>
+
+                            <label className="block">
+                                <span className="mb-2 block text-sm font-medium text-slate-600">
+                                    Dietary requirement
+                                </span>
+                                <div className="relative">
+                                    <select
+                                        className={ SELECT_CLASSNAME }
                                         name="dietary"
                                         value={ formValues.dietary }
-                                        onChange={ handleInputChange }
-                                        placeholder="Select an option"
+                                        onChange={ (event) => updateField("dietary", event.target.value) }
                                     >
-                                        <option value="" disabled>Select an option</option>
-                                        <option value=" ">No Dietary Requirements 🥣</option>
-                                        <option value="gluten-free">Gluten-Free 🧺</option>
-                                        <option value="vegetarian">Vegetarian 🥗</option>
-                                        <option value="vegan">Vegan 🌱</option>
-                                        <option value="dairy-free">Dairy-Free 🥛</option>
-                                        <option value="paleo">Paleo 🏺</option>
-                                        <option value="low-carb">Low-Carb 🍜</option>
-                                        <option value="low-fat">Low-Fat 🥕</option>
-                                        <option value="mediterranean">Mediterranean 🧆</option>
+                                        <option value="" disabled>
+                                            Select an option
+                                        </option>
+                                        { DIETARY_OPTIONS.map((option) => (
+                                            <option key={ option.value } value={ option.value }>
+                                                { option.label }
+                                            </option>
+                                        )) }
                                     </select>
-                                </label>
-                                <div className="mx-auto flex justify-end py-6">
-                                    <Button name="Next" onClick={ handleNextClick } isTeal={ false } />
+                                    <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                            className="h-5 w-5"
+                                            aria-hidden="true"
+                                        >
+                                            <path
+                                                fillRule="evenodd"
+                                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                                clipRule="evenodd"
+                                            />
+                                        </svg>
+                                    </div>
                                 </div>
+                            </label>
+                        </div>
+                    ) : null }
+
+                    { step === 2 ? (
+                        <div className="space-y-5">
+                            <div>
+                                <h2 className="text-xl font-semibold text-slate-900">
+                                    What do you have in your kitchen?
+                                </h2>
                             </div>
+
+                            <textarea
+                                className={ `${INPUT_CLASSNAME} min-h-[140px] resize-none` }
+                                name="ingredients"
+                                value={ formValues.ingredients }
+                                onChange={ (event) => updateField("ingredients", event.target.value) }
+                                placeholder="Chicken, rice, spinach"
+                            />
+                        </div>
+                    ) : null }
+
+                    { step === 3 ? (
+                        <div className="space-y-5">
+                            <div>
+                                <h2 className="text-xl font-semibold text-slate-900">
+                                    Do you have pantry items to support your cooking?
+                                </h2>
+                                <p className="mt-2 text-sm leading-6 text-slate-500">
+                                    Choose whether the recipe can rely on basic pantry staples.
+                                </p>
+                            </div>
+
+                            <div className="grid gap-3 sm:grid-cols-2">
+                                { pantryOptions.map((option) => {
+                                    const isSelected = formValues.pantrySupport === option.value;
+
+                                    return (
+                                        <button
+                                            key={ option.value }
+                                            type="button"
+                                            onClick={ () => updateField("pantrySupport", option.value) }
+                                            className={ `rounded-xl border p-4 text-left transition ${isSelected
+                                                ? "border-slate-900 bg-slate-900 text-white"
+                                                : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+                                                }` }
+                                        >
+                                            <p className="text-base font-semibold">{ option.title }</p>
+                                            <p
+                                                className={ `mt-2 text-sm leading-6 ${isSelected ? "text-slate-200" : "text-slate-500"
+                                                    }` }
+                                            >
+                                                { option.description }
+                                            </p>
+                                        </button>
+                                    );
+                                }) }
+                            </div>
+                        </div>
+                    ) : null }
+
+                    { validationMessage ? (
+                        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                            { validationMessage }
+                        </div>
+                    ) : null }
+
+                    <div className="flex items-center justify-between gap-3 border-t border-slate-100 pt-6">
+                        <button
+                            type="button"
+                            onClick={ handlePrevClick }
+                            className={ SECONDARY_BUTTON_CLASSNAME }
+                            disabled={ step === 1 }
+                        >
+                            Previous
+                        </button>
+
+                        { step < STEPS.length ? (
+                            <button type="button" onClick={ handleNextClick } className={ BUTTON_CLASSNAME }>
+                                Next
+                            </button>
+                        ) : (
+                            <button type="button" onClick={ handleFormSubmit } className={ BUTTON_CLASSNAME }>
+                                Find recipes
+                            </button>
                         ) }
                     </div>
-                    <div>
-                        { step === 2 && (
-                            <div className=" font-semibold text-xl mx-auto">
-                                <label>
-                                    What do you have in your kitchen? 🥡
-                                    <br></br>
-                                    <br></br>
-                                    <input className="text-base bg-teal-50 border-2 border-indigo-200 text-gray-700 rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-5"
-                                        placeholder="beef, rice, potato"
-                                        type="text"
-                                        name="ingredients"
-                                        value={ formValues.ingredients }
-                                        onChange={ handleInputChange }
-                                        onBlur={ handleIngredientsBlur }
-                                        spellCheck="true"
-                                        required
-                                    />
-                                </label>
-
-                                <div className="mx-auto flex justify-between py-6">
-                                    <Button name="Previous" onClick={ handlePrevClick } isTeal={ true } />
-                                    <Button name="Next" onClick={ handleNextClick } isTeal={ false } />
-                                </div>
-                            </div>
-                        ) }
-                    </div>
-                    <div>
-                        { step === 3 && (
-                            <div className=" font-semibold text-xl mx-auto form-step">
-
-                                <h1> Do you have pantry items to support your cooking? 🥫</h1>
-                                <br></br>
-                                <ul className="grid w-full gap-6 md:grid-cols-2">
-                                    <li>
-                                        <label className="inline-flex items-center justify-evenly w-full p-5 bg-teal-50 border-2 border-indigo-200 text-gray-700 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500" >
-                                            <input type="radio" name="pantry" value="true" checked={ formValues.pantry === true } onChange={ handleRadioChange } required />
-                                            <div className="block">
-                                                <div className="text-base px-5">No, please only consider what I have in my kitchen 🔪</div>
-                                            </div>
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <label className="inline-flex items-center justify-evenly w-full p-5 bg-teal-50 border-2 border-indigo-200 text-gray-700 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500">
-                                            <input type="radio" name="pantry" value="false" checked={ formValues.pantry === false } onChange={ handleRadioChange } required />
-                                            <div className="block">
-                                                <div className="text-base px-5">Yes, I have pantry stuff in my kitchen 🧂</div>
-                                            </div>
-                                        </label>
-                                    </li>
-                                </ul>
-
-                                <div className="mx-auto flex justify-between py-6">
-                                    <Button name="Previous" onClick={ handlePrevClick } isTeal={ true } />
-                                    <Button name="Submit" type="submit" isTeal={ false } />
-                                </div>
-                            </div>
-                        ) }
-                    </div>
-
                 </form>
-
-            </div>
+            </section>
         </div>
     );
 };
 
 export default MultiStepForm;
-

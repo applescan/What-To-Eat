@@ -157,23 +157,22 @@ const GroceryPage: React.FC = () => {
   return (
     <>
       {error ? (
-        <div className="mx-14 min-h-[65vh] items-center justify-center bg-[url('../../public/background-4.png')] bg-cover bg-no-repeat py-14">
+        <div className="app-page min-h-[60vh]">
           {snackbarOpen && <Snackbar message={error} link="/" />}
         </div>
       ) : session ? (
-        <div>
-          <div className="min-h-[65vh] bg-[url('../../public/background-4.png')] bg-cover bg-no-repeat px-10 py-14 md:px-8">
+        <div className="app-page">
+          <div className="app-panel min-h-[65vh] px-6 py-10 sm:px-10">
             <div className="mx-auto max-w-screen-2xl px-4 text-gray-600 md:px-8">
               <div className="relative mx-auto max-w-5xl space-y-5 text-center sm:text-center">
-                <h2 className="mx-auto pb-6 text-4xl font-extrabold text-gray-700 md:text-5xl">
+                <h2 className="mx-auto pb-6 text-4xl font-extrabold text-slate-900 md:text-5xl">
                   Welcome to your grocery list,{" "}
-                  <span className="bg-gradient-to-r from-[#6366f1] to-[#14b8a6] bg-clip-text text-transparent">
+                  <span className="text-emerald-600">
                     {session.user?.name}
                   </span>
-                  ✨
                 </h2>
               </div>
-              <p className="mx-auto max-w-2xl pb-6 text-center text-lg font-semibold text-gray-800">
+              <p className="mx-auto max-w-2xl pb-6 text-center text-lg font-semibold text-slate-700">
                 Get started by typing your list here
               </p>
               <div className="mx-auto max-w-2xl items-center">
@@ -182,9 +181,9 @@ const GroceryPage: React.FC = () => {
 
               <br></br>
 
-              <p className="mx-auto py-12 text-center text-xl font-semibold text-gray-800">
+              <p className="mx-auto py-12 text-center text-xl font-semibold text-slate-700">
                 or add groceries from{" "}
-                <span className="bg-gradient-to-r from-[#6366f1] to-[#14b8a6] bg-clip-text text-transparent">
+                <span className="text-emerald-600">
                   your favorites recipes!
                 </span>
               </p>
@@ -207,7 +206,7 @@ const GroceryPage: React.FC = () => {
                   ))}
                 </ul>
               ) : favoriteRecipesDetails.length === 0 ? (
-                <p className="py-6 text-center text-gray-700">
+                <p className="py-6 text-center text-slate-600">
                   You don't have any favorite recipes yet 😓 Please add some
                   from your recommendations.
                 </p>
@@ -220,24 +219,23 @@ const GroceryPage: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div>
-          <div className="min-h-[65vh] bg-[url('../../public/background-3.png')] bg-cover bg-no-repeat px-10 py-14 md:px-8">
+        <div className="app-page">
+          <div className="app-panel min-h-[65vh] px-6 py-10 sm:px-10">
             <div className="mx-auto max-w-screen-xl px-4  text-gray-600 md:px-8">
               <div className="relative mx-auto max-w-2xl space-y-5 text-center sm:text-center">
-                <h2 className="mx-auto pb-6 text-4xl font-extrabold text-gray-700 md:text-5xl">
+                <h2 className="mx-auto pb-6 text-4xl font-extrabold text-slate-900 md:text-5xl">
                   Create a grocery list from{" "}
-                  <span className="bg-gradient-to-r from-[#6366f1] to-[#14b8a6] bg-clip-text text-transparent">
+                  <span className="text-emerald-600">
                     your favorite recipe
                   </span>
-                  ✨
                 </h2>
               </div>
-              <p className="mx-auto max-w-2xl pb-16 text-center font-semibold text-gray-800">
+              <p className="mx-auto max-w-2xl pb-16 text-center font-semibold text-slate-700">
                 Plan your grocery shopping according to your favorite recipes
               </p>
               <button
                 type="button"
-                className="mx-auto block items-center rounded-md bg-indigo-600 px-6 py-3 text-center font-bold text-white hover:bg-neutral-700"
+                className="mx-auto block items-center rounded-lg bg-slate-900 px-6 py-3 text-center font-bold text-white transition hover:bg-slate-800"
                 onClick={() => {
                   signIn("discord").catch(console.log);
                 }}

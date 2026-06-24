@@ -1,114 +1,126 @@
-import React from 'react'
+import React, { useState } from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useState } from 'react'
-import Image from 'next/image';
-import Link from 'next/link';
-import { Dialog, Popover } from '@headlessui/react'
-import {
-  Bars3Icon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline'
+import Image from "next/image";
+import Link from "next/link";
+import { Dialog, Popover } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
-//local imports
-import Logo from "public/logo.png"
-import Button from '../components/Button'
+import Button from "../components/Button";
+import Logo from "public/logo.png";
 
+const navLinks = [
+  { href: "/get-started", label: "Search" },
+  { href: "/recipes", label: "Recipe Suggestions" },
+  { href: "/grocery-list", label: "Favorites & Groceries" },
+];
 
 export default function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: session } = useSession();
 
   return (
-    <header className="bg-white">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <nav
+        className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-8"
+        aria-label="Global"
+      >
         <div className="flex lg:flex-1">
-          <Link href="/">
+          <Link href="/" className="flex items-center">
             <Image src={Logo} width={120} height={50} alt="What to eat logo" />
           </Link>
         </div>
+
         <div className="flex lg:hidden">
-          <button type="button" className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700" onClick={() => setMobileMenuOpen(true)}>
+          <button
+            type="button"
+            className="inline-flex items-center justify-center rounded-lg p-2 text-slate-700"
+            onClick={() => setMobileMenuOpen(true)}
+          >
             <span className="sr-only">Open main menu</span>
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        <Popover.Group className="hidden lg:flex lg:gap-x-12">
-          <Link href={{ pathname: '/get-started' }} className="flex items-center justify-center px-6 text-gray-700 font-medium hover:text-indigo-500 active:text-indigo-600 rounded-lg md:inline-flex">
-            Search
-          </Link>
-          <Link href={{ pathname: '/recipes' }} className="flex items-center justify-center px-6 text-gray-700 font-medium hover:text-indigo-500 active:text-indigo-600 rounded-lg md:inline-flex">
-            Recipe Suggestions
-          </Link>
-          <Link href={{ pathname: '/grocery-list' }} className="flex items-center justify-center px-6 text-gray-700 font-medium hover:text-indigo-500 active:text-indigo-600 rounded-lg md:inline-flex">
-            Favorites & Groceries
-          </Link>
+
+        <Popover.Group className="hidden lg:flex lg:gap-x-2">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="rounded-lg px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
+            >
+              {link.label}
+            </Link>
+          ))}
         </Popover.Group>
-        {session ? (
-          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <Button name="Logout" onClick={() => signOut()} isTeal={false} />
-          </div>
-        ) : (
-          <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-            <Button name="Login" onClick={() => signIn()} isTeal={false} />
-          </div>
-        )}
+
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+          {session ? (
+            <Button
+              name="Logout"
+              onClick={() => {
+                void signOut();
+              }}
+            />
+          ) : (
+            <Button
+              name="Login"
+              onClick={() => {
+                void signIn();
+              }}
+            />
+          )}
+        </div>
       </nav>
+
       <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
-        <div className="fixed inset-0 z-10" />
-        <Dialog.Panel className="fixed inset-y-0 right-0 z-10 w-3/4 overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10 shadow-2xl">
+        <div className="fixed inset-0 z-10 bg-slate-900/20 backdrop-blur-sm" />
+        <Dialog.Panel className="fixed inset-y-0 right-0 z-20 w-3/4 overflow-y-auto border-l border-slate-200 bg-white px-6 py-6 shadow-2xl sm:max-w-sm">
           <div className="flex items-center justify-end">
             <button
               type="button"
-              className="-m-2.5 rounded-md p-2.5 text-gray-700"
+              className="rounded-lg p-2 text-slate-700"
               onClick={() => setMobileMenuOpen(false)}
             >
               <span className="sr-only">Close menu</span>
               <XMarkIcon className="h-6 w-6" aria-hidden="true" />
             </button>
           </div>
-          <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-gray-500/10">
-              <div className="space-y-2 py-6">
-                <Link
-                  href={{ pathname: "/get-started" }}
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
-                  Search
-                </Link>
-                <Link
-                  href={{ pathname: "/recipes" }}
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
-                  Recipe suggestions
-                </Link>
-                <Link
-                  href={{ pathname: "/grocery-list" }}
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">
-                  My groceries
-                </Link>
-              </div>
-              {session ? (
-                <div className="py-6">
-                  <Button name="Logout" onClick={() => signOut()} isTeal={false} />
-                </div>
-              ) : (
-                <div className="py-6">
-                  <Button name="Login" onClick={() => signIn()} isTeal={false} />
-                </div>
-              )}
-            </div>
+
+          <div className="mt-6 space-y-2">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="block rounded-lg px-3 py-2 text-base font-semibold text-slate-900 hover:bg-slate-50"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
 
-          <div className="absolute bottom-0 right-0 mr-6 mb-6">
-            <Image
-              src={Logo}
-              width={120}
-              height={50}
-              alt="Your image"
-            />
+          <div className="mt-6 border-t border-slate-200 pt-6">
+            {session ? (
+              <Button
+                name="Logout"
+                onClick={() => {
+                  void signOut();
+                }}
+              />
+            ) : (
+              <Button
+                name="Login"
+                onClick={() => {
+                  void signIn();
+                }}
+              />
+            )}
+          </div>
+
+          <div className="mt-12">
+            <Image src={Logo} width={120} height={50} alt="What to eat logo" />
           </div>
         </Dialog.Panel>
       </Dialog>
     </header>
-  )
+  );
 }
-
-
