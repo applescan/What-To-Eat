@@ -34,7 +34,7 @@ type Option = {
   value: string;
 };
 
-const DEFAULT_MAX_RESULTS = 12;
+const DEFAULT_MAX_RESULTS = 24;
 
 export const DIETARY_OPTIONS: Option[] = [
   { label: "No dietary requirement", value: "any" },
@@ -349,9 +349,21 @@ export const createRecipeQuestionnaireProfile = (
   };
 };
 
+type SearchParamOptions = {
+  offset?: number;
+  relaxed?: boolean;
+  ingredientLimit?: number;
+  useIngredients?: boolean;
+  useQuery?: boolean;
+  useCuisine?: boolean;
+  useMealType?: boolean;
+  pantrySupport?: PantrySupport;
+  maxReadyTimeBuffer?: number;
+};
+
 const buildSearchParams = (
   profile: RecipeQuestionnaireProfile,
-  options: { offset?: number; relaxed?: boolean } = {},
+  options: SearchParamOptions = {},
 ) => {
   const params = new URLSearchParams({
     apiKey: process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY ?? "",
@@ -365,17 +377,29 @@ const buildSearchParams = (
   });
 
   const relaxed = options.relaxed ?? false;
-  const includeIngredients = profile.ingredients.slice(0, relaxed ? 4 : 8).join(",");
+  const useIngredients = options.useIngredients ?? true;
+  const useQuery = options.useQuery ?? true;
+  const useCuisine = options.useCuisine ?? true;
+  const useMealType = options.useMealType ?? true;
+  const pantrySupport = options.pantrySupport ?? profile.pantrySupport;
+  const ingredientLimit = options.ingredientLimit ?? (relaxed ? 4 : 8);
+  const includeIngredients = useIngredients
+    ? profile.ingredients.slice(0, ingredientLimit).join(",")
+    : "";
   const excludeIngredients = profile.avoidIngredients.slice(0, 6).join(",");
   const diet = profile.dietary !== "any" ? SPOONACULAR_DIET_MAP[profile.dietary] : "";
-  const cuisine = !relaxed && profile.cuisine !== "any" ? profile.cuisine : "";
-  const type = profile.mealType !== "any" ? SPOONACULAR_TYPE_MAP[profile.mealType] ?? "" : "";
+  const cuisine =
+    useCuisine && !relaxed && profile.cuisine !== "any" ? profile.cuisine : "";
+  const type =
+    useMealType && profile.mealType !== "any" ? SPOONACULAR_TYPE_MAP[profile.mealType] ?? "" : "";
   const maxReadyTime = profile.maxReadyTime
-    ? String(relaxed ? profile.maxReadyTime + 15 : profile.maxReadyTime)
+    ? String(profile.maxReadyTime + (options.maxReadyTimeBuffer ?? (relaxed ? 15 : 0)))
     : "";
-  const query = relaxed
-    ? profile.keywords.slice(0, 2).join(" ")
-    : profile.searchQuery;
+  const query = !useQuery
+    ? ""
+    : relaxed
+      ? profile.keywords.slice(0, 2).join(" ")
+      : profile.searchQuery;
 
   if (diet) params.set("diet", diet);
   if (includeIngredients) params.set("includeIngredients", includeIngredients);
@@ -384,16 +408,65 @@ const buildSearchParams = (
   if (cuisine) params.set("cuisine", cuisine);
   if (type) params.set("type", type);
   if (maxReadyTime) params.set("maxReadyTime", maxReadyTime);
-  if (profile.pantrySupport === "ingredients-only") params.set("ignorePantry", "true");
+  if (pantrySupport === "ingredients-only") params.set("ignorePantry", "true");
 
   return params;
 };
 
-export const buildRecipeSearchVariants = (profile: RecipeQuestionnaireProfile) => [
-  buildSearchParams(profile),
-  buildSearchParams(profile, { offset: DEFAULT_MAX_RESULTS }),
-  buildSearchParams(profile, { relaxed: true }),
-];
+export const buildRecipeSearchVariants = (profile: RecipeQuestionnaireProfile) => {
+  const variants = [
+    buildSearchParams(profile),
+    buildSearchParams(profile, { offset: DEFAULT_MAX_RESULTS }),
+    buildSearchParams(profile, { relaxed: true }),
+    buildSearchParams(profile, {
+      relaxed: true,
+      ingredientLimit: 2,
+      useCuisine: false,
+      useMealType: false,
+      maxReadyTimeBuffer: 30,
+    }),
+  ];
+
+  if (profile.ingredients.length > 0) {
+    variants.push(
+      buildSearchParams(profile, {
+        ingredientLimit: 2,
+        useQuery: false,
+        useCuisine: false,
+        useMealType: false,
+        pantrySupport: "pantry-ok",
+        maxReadyTimeBuffer: 30,
+      }),
+      buildSearchParams(profile, {
+        relaxed: true,
+        ingredientLimit: 1,
+        useQuery: false,
+        useCuisine: false,
+        useMealType: false,
+        pantrySupport: "pantry-ok",
+        maxReadyTimeBuffer: 45,
+      }),
+    );
+  }
+
+  if (profile.searchQuery) {
+    variants.push(
+      buildSearchParams(profile, {
+        useIngredients: false,
+        useCuisine: false,
+        maxReadyTimeBuffer: 30,
+      }),
+    );
+  }
+
+  const uniqueVariants = new Map<string, URLSearchParams>();
+
+  variants.forEach((params) => {
+    uniqueVariants.set(params.toString(), params);
+  });
+
+  return Array.from(uniqueVariants.values());
+};
 
 export type SearchRecipeResult = {
   id: number;

@@ -110,7 +110,6 @@ const Recipes: React.FC = () => {
               scoreRecipeForProfile(right, nextProfile) -
               scoreRecipeForProfile(left, nextProfile),
           )
-          .slice(0, 12)
           .map((recipe) => ({
             ...recipe,
             href: `/${recipe.id}`,
